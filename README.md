@@ -4,11 +4,11 @@
 
 Penguin is a native Hermes Agent plugin for distributed teams: precise time conversion, meeting windows that fit the **whole** meeting, and saved team settings. Its optional Desktop page shows four people side by side with one shared time slider. Narrow screens use two columns and a horizontally scrollable timeline.
 
-This release candidate is not yet listed in the catalog. The electric-blue Antarctic control room uses Crystal's Penguin illustration and a crisp PENGUIN dot-matrix wordmark, with four clocks across on desktop and two columns on small screens. A 3.6-second arrival screen can be skipped or replayed; reduced-motion preferences disable its entrance animation. Copying a meeting proposal successfully shows a dismissible Penguin send-off with a short blue-white dot-matrix aurora. The send-off says explicitly that no calendar event was created, and is cleared when the selection changes. It is a local UI animation, not a generated video, and plays no audio.
+This release candidate is not yet listed in the catalog. The electric-blue Antarctic control room uses Crystal's Penguin illustration and a crisp PENGUIN dot-matrix wordmark, with four clocks across on desktop and two columns on small screens. A 3.6-second arrival screen can be skipped or replayed; reduced-motion preferences disable its entrance animation. The Commander comments on the current meeting fit, and each clock has a SALUTE commendation. Successfully copying a meeting proposal shows an inline confirmation and a View send-off control, plus a dismissible APPROVED card, blue-white dot-matrix aurora and replayable penguin exit. The send-off says explicitly that no calendar event was created, and is cleared when the selection changes. It is a local UI animation, not a generated video, and plays no audio.
 
-![Penguin's four-clock planner inside Hermes Desktop](docs/native-planner.png)
+![Penguin's four-clock planner inside Hermes Desktop](docs/native-planner-0.2.jpg)
 
-Captured from the actual official Hermes v0.23.0 Electron app, using its supported development build and a real isolated gateway. The viewport was enlarged for this screenshot. The backend status indicates that no model provider is configured; Penguin's deterministic planner and saved teams work without one. All displayed people and schedules are fictional. [Antarctic arrival screen](docs/native-arrival.png).
+Captured from actual Hermes v0.23.0 with an isolated gateway and fictional team settings. The 0.2.0 artwork/UI branch was checked in the native app; integration follow-ups were checked in a disposable browser harness. Screenshot provenance and the exact distinction are in [validation notes](docs/VALIDATION_0.2.0.md). The backend needs-setup badge means no model provider is configured; Penguin does not require one. [Illustrated Antarctic arrival](docs/native-arrival-0.2.jpg).
 
 ## Install locally
 
@@ -36,7 +36,7 @@ Native macOS verification used the unmodified official v0.23.0 source-built Elec
 
 Brand specification: [English](docs/BRAND_GUIDELINES.md) · [繁體中文](docs/BRAND_GUIDELINES.zh-TW.md).
 
-Changes, validation and distribution scope: [0.2.0 review notes](docs/RELEASE_NOTES_0.2.0.md) · [0.1.1 review notes](docs/RELEASE_NOTES_0.1.1.md).
+Changes, validation and distribution scope: [0.2.0 review notes](docs/RELEASE_NOTES_0.2.0.md) · [0.2.0 review notes](docs/RELEASE_NOTES_0.2.0.md) · [validation and limits](docs/VALIDATION_0.2.0.md).
 
 0.2.0 adds an illustrated control-room arrival, a Commander dispatch line that commends teammates who cannot move their time zones, per-person `SALUTE` medals, an APPROVED stamp and a short exit in which the commander says “I’ll be back.” and dives. All of it is local, silent and non-blocking, and reduced motion is respected.
 
@@ -44,7 +44,7 @@ The original Penguin typography is retained: the Antarctic status line, availabi
 
 Moving the shared timeline starts a backend preview immediately. Previous clocks remain readable while an update is in flight, with an updating state and copying disabled; only the newest response is accepted. A stale clipboard result cannot display a completion for a new selection or another profile. The completion panel remains in the planner, is dismissible, respects reduced motion and does not autoplay audio. Separate narrated demo media is not part of this package.
 
-![Proposal-only send-off in actual Hermes Desktop](docs/native-sendoff.png)
+![Commander dispatch and SALUTE in actual Hermes Desktop](docs/native-commander-0.2.jpg)
 
 ## Four agent tools
 
@@ -94,7 +94,7 @@ This returns `ambiguous_local_time` with **05:30Z and 06:30Z** candidates. Ask t
 
 Runtime makes **no external network calls**, launches no shell or background process, reads no credentials, and has no telemetry. It reads only its bundled files and its own profile-scoped plugin state. Agent tool inputs/outputs are visible to the active Hermes conversation/model as usual.
 
-The Python entry point uses `ctx.register_tool`; persistence uses `ctx.state`. Desktop uses only `@hermes/plugin-sdk` and React: a route, sidebar navigation, plugin-scoped `ctx.rest` and explicit-gesture clipboard writes. Its FastAPI routes under `/api/plugins/penguin/` share the engine and `PluginState("penguin")`; Hermes supplies profile routing and authentication. Backend routes are `preview`, `convert`, `overlap`, `teams/save` and `teams/get`. The read-only `art` route serves one fixed bundled PNG as a data URI through the same host bridge, with no arbitrary file path input. The preview checks every minute of the selected meeting. No host functions, markup, stores or prototypes are patched. A connection/profile change clears the editor's transient data; stale responses are ignored.
+The Python entry point uses `ctx.register_tool`; persistence uses `ctx.state`. Desktop uses only `@hermes/plugin-sdk` and React: a route, sidebar navigation, plugin-scoped `ctx.rest` and explicit-gesture clipboard writes. Its FastAPI routes under `/api/plugins/penguin/` share the engine and `PluginState("penguin")`; Hermes supplies profile routing and authentication. Backend routes are `preview`, `convert`, `overlap`, `teams/save` and `teams/get`. The read-only `art` and `art/kit` routes serve one fixed bundled PNG and four fixed WebP artwork files as data URIs through the same host bridge, with no arbitrary file path input. Successful art-kit loads are shared in memory; failed or incomplete loads are evicted so a later mount (for example Replay arrival) can retry. Artwork failure leaves CSS/SVG/text fallbacks usable; there is no background retry loop. The preview checks every minute of the selected meeting. No host functions, markup, stores or prototypes are patched. A connection/profile change clears the editor's transient data; stale responses are ignored.
 
 ## Tests
 
@@ -108,8 +108,10 @@ HERMES_SOURCE=/absolute/path/to/hermes-agent python -m pytest tests -q
 
 Integration checks need Hermes's runtime dependencies plus FastAPI and httpx. Tests use temporary homes and fictional people. They cover DST gaps/folds, half-hour changes, skipped dates, international date boundaries, overnight weekday attribution, meeting duration, invalid input, deterministic output, data hashes, persistence, corruption preservation, concurrent distinct-team saves and profile isolation. `python -S` verifies the engine needs no installed third-party package.
 
+Browser regressions are development-only and are not a native Hermes substitute. With an isolated loopback harness serving the actual component and Python API, run `playwright-cli run-code --filename tests/desktop-recovery.js` for outage recovery; run `node tests/desktop-completion.mjs` with Playwright available for completion visibility, narrow dates, reduced motion, clipboard failure and invalid input. The latter uses a disposable headless profile and a synthetic clipboard. `PENGUIN_TEST_URL` selects the loopback harness; `PLAYWRIGHT_CHANNEL=chrome` can use an installed Chrome. See [validation notes](docs/VALIDATION_0.2.0.md).
+
 ## Origin and licensing
 
-The scheduling behavior and four-clock interaction evolve Crystal's earlier browser-based team time planner. That original checked one instant; Penguin adds a native agent API, full meeting checks, profile persistence and a shared Python backend. All fixtures and screenshots prepared for this package use fictional people. The AI-generated illustration was supplied by Crystal and is bundled unchanged; the plugin has no music service or generated soundtrack dependency.
+The scheduling behavior and four-clock interaction evolve Crystal's earlier browser-based team time planner. That original checked one instant; Penguin adds a native agent API, full meeting checks, profile persistence and a shared Python backend. All fixtures and screenshots prepared for this package use fictional people. The original AI-generated illustration was supplied by Crystal and is bundled unchanged; the four-file control-room kit is resized/compressed artwork supplied for Penguin; the plugin has no music service or generated soundtrack dependency.
 
-Penguin's code, tests and documentation are MIT-licensed; see `LICENSE`. The illustration is separately permitted for use and redistribution with Penguin and its demonstrations; see `assets/NOTICE.md` and `LICENSE_STATUS.md`. Bundled timezone data retains its upstream license notices in `tzdb/licenses/`. No ElevenLabs service or code is used; its official plugin was only a reference for supported Desktop surfaces.
+Penguin's code, tests and documentation are MIT-licensed; see `LICENSE`. The illustration is separately permitted for use and redistribution with Penguin and its demonstrations; see `assets/NOTICE.md`, `assets/kit/NOTICE.md` and `LICENSE_STATUS.md`. Bundled timezone data retains its upstream license notices in `tzdb/licenses/`. No ElevenLabs service or code is used; its official plugin was only a reference for supported Desktop surfaces.

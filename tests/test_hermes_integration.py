@@ -87,6 +87,14 @@ def test_real_backend_shares_tool_state_and_returns_errors(state):
     illustration = client.get("/api/plugins/penguin/art").json()["src"]
     assert illustration.startswith("data:image/png;base64,")
     assert b64decode(illustration.split(",", 1)[1]) == (Path(__file__).parents[1] / "assets/penguin-polar-station.png").read_bytes()
+    kit = client.get("/api/plugins/penguin/art/kit").json()
+    expected_art = {"background": "control-room.webp", "banner": "commander-banner.webp",
+                    "medal": "commendation-medal.webp", "stamp": "approved-stamp.webp"}
+    assert set(kit) == set(expected_art)
+    for key, filename in expected_art.items():
+        assert kit[key].startswith("data:image/webp;base64,")
+        assert b64decode(kit[key].split(",", 1)[1]) == (Path(__file__).parents[1] / "assets/kit" / filename).read_bytes()
+    assert client.get("/api/plugins/penguin/art/kit").json() == kit
     saved = client.post("/api/plugins/penguin/teams/save", json={"team_id": "aurora", "team": fixture_team()}).json()
     assert saved["ok"]
     assert execute("get_team", {"team_id": "aurora"}, state)["result"]["team"] == fixture_team()

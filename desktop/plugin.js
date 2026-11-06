@@ -48,7 +48,7 @@ const experienceCss = `
 .penguin-page .p-selected input{font:700 32px var(--p-mono);font-variant-numeric:tabular-nums;letter-spacing:-2px}
 .penguin-page .p-clockcard .p-time{font-family:var(--p-mono);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-2px}
 .penguin-page .p-clocks[aria-busy=true]{opacity:.68}.penguin-page .p-marker{transition:left 120ms linear}
-.p-sendoff{position:relative;isolation:isolate;overflow:hidden;border:1px solid #6e99ff;border-radius:5px;background:#09152e;color:#edf7ff;padding:22px 24px;margin-top:18px;display:flex;gap:24px;align-items:center;animation:p-arrive 400ms ease-out}.p-sendoff .p-art{width:132px;height:132px;flex:0 0 132px;border:1px solid #6a9aff;transform:none;box-shadow:none}.p-sendoff .p-sendoff-copy{flex:1;min-width:0}.p-sendoff h2{font:700 13px var(--p-mono);letter-spacing:1px;color:#9dc6ff;margin:0 0 8px}.p-sendoff h3{font-size:clamp(20px,2.4cqw,28px);font-family:var(--p-display);line-height:1.2;margin:0 30px 10px 0;color:#fff7e5}.p-sendoff p{font-size:13px;color:#c7dafa;margin:7px 0}.p-sendoff .p-close{position:absolute;top:12px;right:12px;background:#132a55;border:1px solid #7899d8;color:white;border-radius:3px;padding:5px 9px;font-size:13px}.p-sendoff .p-final-times{display:flex;gap:7px 18px;flex-wrap:wrap;font:12px var(--p-mono);color:#d4e8ff}.p-sendoff .p-aurora{position:absolute;inset:-50% -10%;z-index:-1;opacity:.38;background:radial-gradient(circle,#e9faff 1px,transparent 1.7px);background-size:7px 7px;mask-image:linear-gradient(165deg,transparent 37%,black 43%,transparent 49%,black 54%,transparent 62%);background-color:#1252df;transform:translateX(-4%) skewY(-8deg);animation:p-aurora 6s ease-in-out 1 alternate}
+.p-sendoff{position:relative;isolation:isolate;overflow:hidden;border:1px solid #6e99ff;border-radius:5px;background:#09152e;color:#edf7ff;padding:22px 24px;margin-top:18px;display:flex;gap:24px;align-items:center;animation:p-arrive 400ms ease-out}.p-sendoff .p-art{width:132px;height:132px;flex:0 0 132px;border:1px solid #6a9aff;transform:none;box-shadow:none}.p-sendoff .p-sendoff-copy{flex:1;min-width:0}.p-sendoff h2{font:700 13px var(--p-mono);letter-spacing:1px;color:#9dc6ff;margin:0 0 8px}.p-sendoff h3{font-size:clamp(20px,2.4cqw,28px);font-family:var(--p-display);line-height:1.2;margin:0 30px 10px 0;color:#fff7e5}.p-sendoff p{font-size:13px;color:#c7dafa;margin:7px 0}.p-sendoff .p-close{position:absolute;top:12px;right:12px;background:#132a55;border:1px solid #7899d8;color:white;border-radius:3px;padding:5px 9px;font-size:13px}.p-sendoff .p-final-date{display:block;white-space:nowrap}.p-sendoff .p-final-times>span{min-width:0}.p-sendoff .p-final-times{display:flex;gap:7px 18px;flex-wrap:wrap;font:12px var(--p-mono);color:#d4e8ff}.p-sendoff .p-aurora{position:absolute;inset:-50% -10%;z-index:-1;opacity:.38;background:radial-gradient(circle,#e9faff 1px,transparent 1.7px);background-size:7px 7px;mask-image:linear-gradient(165deg,transparent 37%,black 43%,transparent 49%,black 54%,transparent 62%);background-color:#1252df;transform:translateX(-4%) skewY(-8deg);animation:p-aurora 6s ease-in-out 1 alternate}
 
 @keyframes p-stamp{0%{opacity:0;transform:rotate(-9deg) scale(1.9)}60%{opacity:1;transform:rotate(-9deg) scale(.94)}100%{opacity:1;transform:rotate(-9deg) scale(1)}}
 .penguin-page .p-dispatch{display:flex;gap:10px;align-items:baseline;margin:10px 0 0;padding:10px 14px;background:#09152e;border:1px solid #315dff;border-radius:3px;color:#f5f2dc;font-size:13px;line-height:1.45}
@@ -60,7 +60,7 @@ const experienceCss = `
 @keyframes p-aurora{0%{transform:translateX(-10%) skewY(-13deg);opacity:.1}45%{opacity:.45}100%{transform:translateX(5%) skewY(5deg);opacity:.38}}
 @media(prefers-reduced-motion:reduce){.p-sendoff,.p-sendoff .p-aurora,.p-sendoff .p-stamp,.penguin-page .p-marker{animation:none;transition:none}}
 @container(max-width:800px){.p-sendoff{gap:16px;padding:20px}.p-sendoff .p-art{width:100px;height:100px;flex-basis:100px}}
-@container(max-width:480px){.p-sendoff .p-stamp{position:static;display:inline-block;margin:0 0 10px}.penguin-page .p-dispatch{display:block}.penguin-page .p-dispatch b{display:block;margin-bottom:3px}.penguin-page .p-selected input{font-size:28px;max-width:112px}.p-sendoff{display:block;padding:18px}.p-sendoff .p-art{width:86px;height:86px;margin-bottom:14px}.p-sendoff h3{font-size:23px}.p-sendoff .p-final-times{display:grid;grid-template-columns:1fr 1fr;font-size:11px}}
+@container(max-width:480px){.p-sendoff .p-stamp{position:static;display:inline-block;margin:0 0 10px}.penguin-page .p-dispatch{display:block}.penguin-page .p-dispatch b{display:block;margin-bottom:3px}.penguin-page .p-selected input{font-size:28px;max-width:112px}.p-sendoff{display:block;padding:18px}.p-sendoff .p-art{width:86px;height:86px;margin-bottom:14px}.p-sendoff h3{font-size:23px}.p-sendoff .p-final-times{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));font-size:11px}}
 `
 
 const kitCss = `
@@ -106,7 +106,18 @@ function useKit(ctx) {
   const [kit,setKit]=useState(()=>kitCache.get(ctx)?.value||null)
   useEffect(()=>{
     let active=true,entry=kitCache.get(ctx)
-    if(!entry){entry={value:null};entry.promise=ctx.rest('/art/kit',{method:'GET'}).then(r=>(entry.value=r&&r.background&&r.banner&&r.medal&&r.stamp?r:null)).catch(()=>null);kitCache.set(ctx,entry)}
+    if(!entry){
+      entry={value:null}
+      entry.promise=ctx.rest('/art/kit',{method:'GET'}).then(r=>{
+        entry.value=r&&r.background&&r.banner&&r.medal&&r.stamp?r:null
+        // Keep successful/in-flight loads shared; a temporary outage must not
+        // poison future mounts (including Replay arrival) with a cached null.
+        if(!entry.value)kitCache.delete(ctx)
+        return entry.value
+      }).catch(()=>{kitCache.delete(ctx);return null})
+      kitCache.set(ctx,entry)
+    }
+    setKit(entry.value)
     entry.promise.then(v=>{if(active&&v)setKit(v)})
     return()=>{active=false}
   },[ctx])
@@ -142,13 +153,13 @@ function ExitStage() {
     h('button',{className:'p-encore',key:'encore',onClick:()=>setRun(run+1),'aria-label':'Replay the commander’s exit'},'Encore'))
 }
 
-function SendOff({ctx,slot,onClose}) {
+function SendOff({ctx,slot,onClose,nodeRef}) {
   const kit=useKit(ctx)
-  return h('section',{className:'p-sendoff'+(kit?' p-has-stamp':''),'aria-label':'Meeting proposal completed'},
+  return h('section',{ref:nodeRef,className:'p-sendoff'+(kit?' p-has-stamp':''),'aria-label':'Meeting proposal completed'},
     h('div',{className:'p-aurora','aria-hidden':true}),kit?h('div',{className:'p-stamp p-stamp-art','aria-hidden':true},h('img',{src:kit.stamp,alt:''}),h('span',{},'APPROVED')):h('div',{className:'p-stamp','aria-hidden':true},'APPROVED · COMMANDER PENGUIN'),h(PenguinArt,{ctx}),
     h('div',{className:'p-sendoff-copy'},h('h2',{},'PROPOSAL COPIED · TRANSMISSION COMPLETE'),
       h('h3',{},'Dismissed. See you next time in the Antarctic control room.'),
-      h('div',{className:'p-final-times'},...slot.members.map((m,i)=>h('span',{key:i},`${m.name} ${m.start.local.slice(11,16)} · ${m.start.date}`))),
+      h('div',{className:'p-final-times'},...slot.members.map((m,i)=>h('span',{key:i},`${m.name} ${m.start.local.slice(11,16)}`,h('time',{className:'p-final-date',dateTime:m.start.date},m.start.date)))),
       h('p',{},'Share the proposal and confirm availability. No calendar event has been created.')),
     h(ExitStage,{}),
     h('button',{className:'p-close',onClick:onClose,'aria-label':'Close send-off'},'×'))
@@ -286,6 +297,7 @@ function Planner({ctx,profile}) {
   const [time,setTime]=useState('21:00'), [ambiguity,setAmbiguity]=useState('reject')
   const [view,setView]=useState(null), [previewError,setPreviewError]=useState(null), [previewPending,setPreviewPending]=useState(true)
   const [completed,setCompleted]=useState(null)
+  const sendOffRef=useRef(null)
   const [result,setResult]=useState(null), [notice,setNotice]=useState(''), [busy,setBusy]=useState(false), [manual,setManual]=useState('')
   const generation=useRef(0), previewGeneration=useRef(0), epoch=useRef(gatewayActivationEpoch())
   function resetScope(){
@@ -368,11 +380,12 @@ function Planner({ctx,profile}) {
     h('section',{className:'p-clocks','aria-label':'Side-by-side team clocks','aria-busy':previewPending},...team.members.map((member,i)=>h(ClockCard,{key:i,ctx,index:i,member,view:view?.members[i],pending:previewPending}))),
     h('section',{className:'p-summary','aria-live':'polite'},
       h('div',{},h('h2',{},previewPending?'Updating everyone’s clocks…':view?`${view.members.filter(m=>m.available).length} of ${team.members.length} can fit the full meeting`:'Choose a valid time to compare'),
-        h('div',{className:'p-small'},view?`${view.start_utc} → ${view.end_utc} · IANA ${view.database.iana_version}`:'Penguin checks the whole meeting, including daylight-saving transitions.')),
+        h('div',{className:'p-small'},view?`${view.start_utc} → ${view.end_utc} · IANA ${view.database.iana_version}`:'Penguin checks the whole meeting, including daylight-saving transitions.'),
+        completed&&h('p',{className:'p-small',role:'status'},'Proposal copied. No calendar event created. ',h('button',{className:'p-link',onClick:()=>sendOffRef.current?.scrollIntoView({block:'start',behavior:'instant'})},'View send-off ↓'))),
       h('button',{className:'p-primary',disabled:!view||previewPending,onClick:copy},'Copy meeting proposal ↗')),
     h(Dispatch,{ctx,text:dispatch({pending:previewPending,view,error:previewError})}),
     notice&&!completed&&h('div',{className:'p-status',role:'status'},notice),manual&&h('pre',{className:'p-manual',tabIndex:0,'aria-label':'Meeting proposal to copy'},manual),
-    completed&&h(SendOff,{ctx,slot:completed,onClose:()=>setCompleted(null)}),
+    completed&&h(SendOff,{ctx,slot:completed,nodeRef:sendOffRef,onClose:()=>setCompleted(null)}),
     h('details',{className:'p-settings'},h('summary',{},'Edit your colony · people, work hours & saved teams'),
       h('p',{className:'p-sub'},'Confirm every person’s IANA zone. Work bars show local wall-clock hours; folds repeat and gaps are skipped in the precise calculation.'),
       h('div',{className:'p-teamhead'},h(Field,{label:'Team name',value:team.name,onChange:v=>edit(setTeam,{...team,name:v}),maxLength:80})),

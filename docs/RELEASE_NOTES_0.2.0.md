@@ -1,6 +1,6 @@
 # Penguin 0.2.0 review notes — Commander delight
 
-Branch `opus/commander-delight`. The deterministic time engine, its four tools and profile-local storage are unchanged from 0.1.1; this release only touches the optional Desktop page, one read-only art route and documentation.
+Integrates `opus/commander-delight` through `ac6ffdbda9511b45d4685144b2d3ed47b14b8b5e`, preserving its original commits. The deterministic time engine, its four tools and profile-local storage are unchanged from 0.1.1; this release only touches the optional Desktop page, one read-only art route and documentation.
 
 ## Changes
 
@@ -12,12 +12,19 @@ Branch `opus/commander-delight`. The deterministic time engine, its four tools a
 - **Fixes:** invalid times show `NO VALID TIME` instead of a perpetual `CHECKING…`; a failed preview request now applies the same connection-epoch guard as a successful one; long IANA names wrap after a slash rather than mid-word.
 - **Typography:** type roles are declared once as tokens (status line, badge, technical button, IANA zone, numerals) and the new elements reuse them. The arrival sub-line and console label now share the status-line tracking (1.7px). The four protected roles and the numeral specification are unchanged.
 
+## Integration follow-ups
+
+- Failed or incomplete art-kit requests no longer poison the shared cache. Reopening arrival retries after the backend recovers; successful loads remain shared. Existing fallback artwork stays usable while unavailable.
+- Successful copying immediately displays a proposal-only confirmation beside the Copy control. View send-off navigates to the existing completion card on request, without an unsolicited focus or scroll jump.
+- Completion dates have their own unbroken line, including the narrow two-column layout.
+
 ## Validation
 
-- 57 core/service tests pass (Python 3.10 Linux VM and 3.13); the real-Hermes integration tests were not re-run for this branch.
-- Independent tz check: 3,000 random conversions across ten zones matched the host system tzdata (2026e) exactly; DST gaps/folds in New York and London, illegal inputs and long IANA names behaved as specified.
-- Exercised in the unmodified official Hermes v0.23.0 Electron development build with an isolated home and a freshly restarted gateway: new background, dispatch frame and text placement, SALUTE medal, copy → stamp → exit → Encore, invalid time, rapid successive inputs and slider drags.
-- Not re-run on this branch: 390px layout, reduced motion, clipboard-failure path, official `plugins validate`.
+- 62 Python tests pass using the official Hermes per-file runner, including all five real-Hermes integration tests and new exact-byte assertions for the four-file art API.
+- The artwork outage regression fails on the reviewed UI branch and passes after the fix. It checks fallback, retry and successful shared caching.
+- Six headless browser checks pass against the production component with the real Python backend and a test SDK adapter: four clocks/all SALUTEs, visible completion/navigation, 392px dates, reduced motion, clipboard failure, and invalid-time recovery.
+- Official `plugins validate --install-deps --json`: all 16 checks pass, no warnings. No new runtime dependencies or capability declarations.
+- Native macOS QA of the reviewed UI branch covers the Commander, all SALUTEs, copy/stamp/exit/Encore, reduced motion, invalid-zone recovery and narrow windows. The final three integration corrections have browser regression coverage; their final native replay and refreshed screenshots remain pending. See [exact scope and screenshot provenance](VALIDATION_0.2.0.md).
 
 ## Scope
 
