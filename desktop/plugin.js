@@ -172,7 +172,7 @@ function ControlRoom({ctx,onContinue}) {
     kit&&h('div',{className:'p-bg','aria-hidden':true,style:{backgroundImage:`url(${kit.background})`}}),
     h('div',{className:'p-mountains','aria-hidden':true}),h('div',{className:'p-ice','aria-hidden':true}),h('div',{className:'p-station','aria-hidden':true}),
     h('div',{className:'p-console'},h(PenguinArt,{ctx}),h('h1',{},'Your time is under my command.'),
-      h('p',{},'COMMANDER PENGUIN · YOUR SHARED MOMENT AWAITS'),h('button',{onClick:onContinue},'Enter planner · 略過開場')))
+      h('p',{},'COMMANDER PENGUIN · YOUR SHARED MOMENT AWAITS'),h('button',{onClick:onContinue},'Skip intro')))
 }
 
 function Wordmark() {

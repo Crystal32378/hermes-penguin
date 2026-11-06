@@ -18,7 +18,7 @@ try {
     }}})
   })
   await page.goto(url)
-  await page.getByRole('button',{name:'Enter planner · 略過開場'}).click()
+  await page.getByRole('button',{name:'Skip intro',exact:true}).click()
   await page.getByRole('heading',{name:'4 of 4 can fit the full meeting'}).waitFor()
   assert.deepEqual(await page.locator('.p-clockcard .p-time').allTextContents(),['21:00','08:00','13:00','05:00'])
   for(const name of ['Mika','Rowan','Ivo','Nora'])await page.getByRole('button',{name:`Salute ${name}`}).click()

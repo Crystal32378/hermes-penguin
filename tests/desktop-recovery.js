@@ -13,7 +13,7 @@ async page => {
   })
   try {
     await page.reload()
-    await page.getByRole('button', {name:'Enter planner · 略過開場'}).click()
+    await page.getByRole('button', {name:'Skip intro', exact:true}).click()
     await page.getByRole('heading', {name:'4 of 4 can fit the full meeting'}).waitFor()
     if (!requests) throw Error('Fault injection did not execute')
     const failedRequests = requests
@@ -21,12 +21,12 @@ async page => {
     await page.getByRole('button', {name:'Replay arrival'}).click()
     await page.locator('.p-intro-art .p-bg').waitFor({timeout:2500})
     if (requests <= failedRequests) throw Error('Artwork failure was not retried')
-    await page.getByRole('button', {name:'Enter planner · 略過開場'}).click()
+    await page.getByRole('button', {name:'Skip intro', exact:true}).click()
     await page.locator('.p-dispatch-frame').waitFor()
     const recoveredRequests = requests
     await page.getByRole('button', {name:'Replay arrival'}).click()
     await page.locator('.p-intro-art .p-bg').waitFor()
-    await page.getByRole('button', {name:'Enter planner · 略過開場'}).click()
+    await page.getByRole('button', {name:'Skip intro', exact:true}).click()
     await page.locator('.p-dispatch-frame').waitFor()
     if (requests !== recoveredRequests) throw Error('Successful artwork was not cached')
     return {passed:['artwork outage falls back', 'replay retries after recovery', 'successful artwork is shared and cached'], requests}

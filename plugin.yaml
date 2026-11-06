@@ -1,5 +1,5 @@
 name: penguin
-version: "0.2.0"
+version: "0.2.1"
 description: Deterministic IANA time conversion, whole-meeting overlap, and profile-local team settings with an optional Desktop planner.
 author: Crystal Chang
 requires_hermes: ">=0.23.0"

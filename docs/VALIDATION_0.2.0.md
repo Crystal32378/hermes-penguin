@@ -1,4 +1,4 @@
-# Penguin 0.2.0 validation scope
+# Penguin 0.2.0 / 0.2.1 validation scope
 
 Validated against official Hermes v0.23.0, commit `2bd378ed1b8d6bf2192cb26e0a55ff3091e6bd19`. Public catalog admission is still pending; local checks are not maintainer approval.
 
@@ -17,11 +17,17 @@ Integration adds only artwork-cache recovery, a visible copy confirmation with e
 | Headless UI suite | Six checks pass using the production component, real Python API, test SDK adapter and synthetic clipboard |
 | Official plugin validation | 16/16, no warnings, including security scan, capability probe, public Desktop surface and no core override |
 | Original branch native macOS QA | Four clocks, all SALUTEs, Commander, copy/stamp/exit/Encore, invalid-zone recovery, keyboard slider, 532/392px content and reduced motion checked in actual Hermes |
-| Final integration native replay | Pending; the three follow-up corrections have browser coverage, not a new native-app certification |
+| Final integration native replay | Passed in isolated native macOS Hermes at `e0f4ae144117eeb7ea0a7ff42c5e2b76b8b5c0ba`: inline copy cue/navigation, intact narrow dates and art-kit recovery without page reload. The installed 648 files matched that commit and all four served artwork hashes matched after restarting the gateway |
 | Other platforms | Linux/Windows GUI, real touch device and screen-reader speech not tested |
 | Conversational model routing | No model provider configured for native QA; automatic LLM tool selection not tested |
 
 The headless completion suite checks the visible copy status, navigation to the entire send-off card, unbroken dates at 392px, static reduced-motion exit, manual-copy fallback without a false APPROVED state, and invalid-time recovery. Its clipboard is synthetic; it does not certify the operating system clipboard. Native copy succeeded in the earlier branch QA.
+
+## 0.2.1 English-control follow-up
+
+The only runtime UI change is the arrival button text, now `Skip intro`. Its accessible name comes from the same visible text; there is no overriding label. Existing browser-test selectors use that exact English name. Keyboard Enter successfully skips the opening, Replay arrival still opens it, and the commander exit retains the `p-dive` animation and Encore button (accessible name `Replay the commander’s exit`). Reduced motion leaves both arrival and exit static. The six existing completion checks and the artwork-recovery checks also pass. No animation, timing, backend, artwork or permission change is included.
+
+During native upgrade testing, the existing backend retained older successful artwork bytes after replacement/plugin reload. Restarting the isolated gateway resolved this; the final served hashes then matched the package. Restart the gateway after upgrading before assessing the artwork version.
 
 ## Screenshot provenance
 
@@ -32,6 +38,8 @@ These are unmodified native-app JPEG captures from the reviewed UI branch above,
 - `native-arrival-0.2.jpg`: narrow illustrated arrival with reduced motion.
 
 They demonstrate the integrated artwork and unchanged planner/dispatch layout. They do not depict the new inline copy confirmation or corrected completion-date layout. Earlier `native-*.png` images belong to the 0.1.x review and are not used in the 0.2.0 catalog gallery.
+
+The gallery predates the 0.2.1 button wording; the current opening control reads `Skip intro`.
 
 ## Reproduction
 

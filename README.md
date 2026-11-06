@@ -2,6 +2,8 @@
 
 **A penguin in Antarctica, keeping an eye on everyone's time.**
 
+0.2.1 changes the arrival button to **Skip intro**, including its accessible name. The arrival, commander dive, replay controls and reduced-motion behavior are retained.
+
 Penguin is a native Hermes Agent plugin for distributed teams: precise time conversion, meeting windows that fit the **whole** meeting, and saved team settings. Its optional Desktop page shows four people side by side with one shared time slider. Narrow screens use two columns and a horizontally scrollable timeline.
 
 This release candidate is not yet listed in the catalog. The electric-blue Antarctic control room uses Crystal's Penguin illustration and a crisp PENGUIN dot-matrix wordmark, with four clocks across on desktop and two columns on small screens. A 3.6-second arrival screen can be skipped or replayed; reduced-motion preferences disable its entrance animation. The Commander comments on the current meeting fit, and each clock has a SALUTE commendation. Successfully copying a meeting proposal shows an inline confirmation and a View send-off control, plus a dismissible APPROVED card, blue-white dot-matrix aurora and replayable penguin exit. The send-off says explicitly that no calendar event was created, and is cleared when the selection changes. It is a local UI animation, not a generated video, and plays no audio.
