@@ -4,7 +4,7 @@
 
 Penguin is a native Hermes Agent plugin for distributed teams: precise time conversion, meeting windows that fit the **whole** meeting, and saved team settings. Its optional Desktop page shows four people side by side with one shared time slider. Narrow screens use two columns and a horizontally scrollable timeline.
 
-This release candidate is not yet listed in the catalog. The electric-blue Antarctic control room uses Crystal's Penguin illustration and a crisp PENGUIN dot-matrix wordmark, with four clocks across on desktop and two columns on small screens. A 3.6-second arrival screen can be skipped or replayed; reduced-motion preferences disable its entrance animation. It is a local UI animation, not a generated video, and plays no audio.
+This release candidate is not yet listed in the catalog. The electric-blue Antarctic control room uses Crystal's Penguin illustration and a crisp PENGUIN dot-matrix wordmark, with four clocks across on desktop and two columns on small screens. A 3.6-second arrival screen can be skipped or replayed; reduced-motion preferences disable its entrance animation. Copying a meeting proposal successfully shows a dismissible Penguin send-off with a short blue-white dot-matrix aurora. The send-off says explicitly that no calendar event was created, and is cleared when the selection changes. It is a local UI animation, not a generated video, and plays no audio.
 
 ![Penguin's four-clock planner inside Hermes Desktop](docs/native-planner.png)
 
@@ -31,6 +31,16 @@ hermes
 For Desktop, connect the app to the same home/profile, enable Penguin's Desktop half in **Capabilities → Plugins**, and open **Penguin** in the sidebar. Restart the gateway after adding its backend. Desktop is opt-in. No installed user profile was changed while building this prototype. The standalone browser harness in the development workspace is a test preview, not a replacement for Hermes.
 
 Native macOS verification used the unmodified official v0.23.0 source-built Electron app and an isolated gateway/home. The sidebar route, backend-loaded illustration, four clocks, shared suggestions, whole-meeting rejection, save/edit/load and repeated-hour choice were exercised in the real app. No model provider was configured in that test profile: Desktop works without an LLM, while conversational model-driven tool selection remains untested. Tool registration and calls were separately tested through the real Hermes PluginManager and registry.
+
+## Interface typography and interaction
+
+Brand specification: [English](docs/BRAND_GUIDELINES.md) · [繁體中文](docs/BRAND_GUIDELINES.zh-TW.md).
+
+The original Penguin typography is retained: the Antarctic status line, availability badges, replay control and IANA zone labels keep their compact monospace character. The upper selected-time input now explicitly shares the clock cards’ numeral family, weight, tabular-number feature and tracking. The PENGUIN wordmark remains a drawn dot matrix. Fonts resolve locally through system font stacks; no commercial website fonts, trial font files or external font requests are bundled.
+
+Moving the shared timeline starts a backend preview immediately. Previous clocks remain readable while an update is in flight, with an updating state and copying disabled; only the newest response is accepted. A stale clipboard result cannot display a completion for a new selection or another profile. The completion panel remains in the planner, is dismissible, respects reduced motion and does not autoplay audio. Separate narrated demo media is not part of this package.
+
+![Proposal-only send-off in actual Hermes Desktop](docs/native-sendoff.png)
 
 ## Four agent tools
 

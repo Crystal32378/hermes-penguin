@@ -39,6 +39,29 @@ const introCss = `
 @container(max-width:480px){.p-intro{padding:20px 14px}.p-intro .p-console{padding:20px 12px;border-width:6px}.p-intro .p-console:before{font-size:8px;letter-spacing:1px}.p-intro h1{font-size:23px}.p-intro .p-art{width:200px;height:200px}.p-replay{max-width:90px}}
 `
 
+const experienceCss = `
+.penguin-page{--p-mono:ui-monospace,monospace;--p-display:system-ui,sans-serif}
+.penguin-page .p-selected input{font:700 32px var(--p-mono);font-variant-numeric:tabular-nums;letter-spacing:-2px}
+.penguin-page .p-clockcard .p-time{font-family:var(--p-mono);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-2px}
+.penguin-page .p-clocks[aria-busy=true]{opacity:.68}.penguin-page .p-marker{transition:left 120ms linear}
+.p-sendoff{position:relative;isolation:isolate;overflow:hidden;border:1px solid #6e99ff;border-radius:5px;background:#09152e;color:#edf7ff;padding:22px 24px;margin-top:18px;display:flex;gap:24px;align-items:center;animation:p-arrive 400ms ease-out}.p-sendoff .p-art{width:132px;height:132px;flex:0 0 132px;border:1px solid #6a9aff;transform:none;box-shadow:none}.p-sendoff .p-sendoff-copy{flex:1;min-width:0}.p-sendoff h2{font:700 13px var(--p-mono);letter-spacing:1px;color:#9dc6ff;margin:0 0 8px}.p-sendoff h3{font-size:clamp(20px,2.4cqw,28px);font-family:var(--p-display);line-height:1.2;margin:0 30px 10px 0;color:#fff7e5}.p-sendoff p{font-size:13px;color:#c7dafa;margin:7px 0}.p-sendoff button{position:absolute;top:12px;right:12px;background:#132a55;border:1px solid #7899d8;color:white;border-radius:3px;padding:5px 9px;font-size:13px}.p-sendoff .p-final-times{display:flex;gap:7px 18px;flex-wrap:wrap;font:12px var(--p-mono);color:#d4e8ff}.p-sendoff .p-aurora{position:absolute;inset:-50% -10%;z-index:-1;opacity:.38;background:radial-gradient(circle,#e9faff 1px,transparent 1.7px);background-size:7px 7px;mask-image:linear-gradient(165deg,transparent 37%,black 43%,transparent 49%,black 54%,transparent 62%);background-color:#1252df;transform:translateX(-4%) skewY(-8deg);animation:p-aurora 6s ease-in-out 1 alternate}
+
+@keyframes p-aurora{0%{transform:translateX(-10%) skewY(-13deg);opacity:.1}45%{opacity:.45}100%{transform:translateX(5%) skewY(5deg);opacity:.38}}
+@media(prefers-reduced-motion:reduce){.p-sendoff,.p-sendoff .p-aurora,.penguin-page .p-marker{animation:none;transition:none}}
+@container(max-width:800px){.p-sendoff{gap:16px;padding:20px}.p-sendoff .p-art{width:100px;height:100px;flex-basis:100px}}
+@container(max-width:480px){.penguin-page .p-selected input{font-size:28px;max-width:112px}.p-sendoff{display:block;padding:18px}.p-sendoff .p-art{width:86px;height:86px;margin-bottom:14px}.p-sendoff h3{font-size:23px}.p-sendoff .p-final-times{display:grid;grid-template-columns:1fr 1fr;font-size:11px}}
+`
+
+function SendOff({ctx,slot,onClose}) {
+  return h('section',{className:'p-sendoff','aria-label':'Meeting proposal completed'},
+    h('div',{className:'p-aurora','aria-hidden':true}),h(PenguinArt,{ctx}),
+    h('div',{className:'p-sendoff-copy'},h('h2',{},'PROPOSAL COPIED · TRANSMISSION COMPLETE'),
+      h('h3',{},'Dismissed. See you next time in the Antarctic control room.'),
+      h('div',{className:'p-final-times'},...slot.members.map((m,i)=>h('span',{key:i},`${m.name} ${m.start.local.slice(11,16)} · ${m.start.date}`))),
+      h('p',{},'Share the proposal and confirm availability. No calendar event has been created.')),
+    h('button',{onClick:onClose,'aria-label':'Close send-off'},'×'))
+}
+
 function ControlRoom({ctx,onContinue}) {
   useEffect(()=>{const timer=setTimeout(onContinue,3600);return()=>clearTimeout(timer)},[])
   return h('section',{className:'p-intro','aria-label':'Antarctic control room'},
@@ -132,12 +155,13 @@ function Planner({ctx,profile}) {
   const [team,setTeam]=useState(sample), [teamId,setTeamId]=useState('aurora-demo')
   const [date,setDate]=useState('2026-11-16'), [reference,setReference]=useState('Asia/Taipei'), [duration,setDuration]=useState('60')
   const [time,setTime]=useState('21:00'), [ambiguity,setAmbiguity]=useState('reject')
-  const [view,setView]=useState(null), [previewError,setPreviewError]=useState(null)
+  const [view,setView]=useState(null), [previewError,setPreviewError]=useState(null), [previewPending,setPreviewPending]=useState(true)
+  const [completed,setCompleted]=useState(null)
   const [result,setResult]=useState(null), [notice,setNotice]=useState(''), [busy,setBusy]=useState(false), [manual,setManual]=useState('')
   const generation=useRef(0), previewGeneration=useRef(0), epoch=useRef(gatewayActivationEpoch())
   function resetScope(){
     generation.current++;previewGeneration.current++;epoch.current=gatewayActivationEpoch()
-    setTeam(sample());setTeamId('aurora-demo');setResult(null);setView(null);setManual('');setBusy(false)
+    setTeam(sample());setTeamId('aurora-demo');setResult(null);setView(null);setManual('');setBusy(false);setCompleted(null);setPreviewPending(true)
     setNotice('Connection changed. Fictional sample restored. Load a team from this profile to continue.')
   }
   useEffect(()=>{
@@ -146,27 +170,28 @@ function Planner({ctx,profile}) {
   },[])
   useEffect(()=>{
     const seq=++previewGeneration.current,captured=epoch.current
-    setView(null);setPreviewError(null)
-    const timer=setTimeout(async()=>{
+    setPreviewPending(true);setPreviewError(null)
+    ;(async()=>{
       try{
         const answer=await ctx.rest('/preview',{method:'POST',body:{team,reference_zone:reference,local_time:`${date}T${time}`,duration_minutes:Number(duration),ambiguity}})
         if(seq!==previewGeneration.current||captured!==gatewayActivationEpoch())return
-        if(answer.ok)setView(answer.result);else setPreviewError(answer.error)
-      }catch{if(seq===previewGeneration.current)setPreviewError({message:'Enable Penguin’s agent plugin and restart the gateway to connect this planner.'})}
-    },150)
-    return()=>{clearTimeout(timer);previewGeneration.current++}
+        if(answer.ok)setView(answer.result);else {setView(null);setPreviewError(answer.error)}
+      }catch{if(seq===previewGeneration.current){setView(null);setPreviewError({message:'Enable Penguin’s agent plugin and restart the gateway to connect this planner.'})}}
+      finally{if(seq===previewGeneration.current&&captured===gatewayActivationEpoch())setPreviewPending(false)}
+    })()
+    return()=>{previewGeneration.current++}
   },[team,date,reference,duration,time,ambiguity])
   function edit(setter,value){
-    generation.current++;previewGeneration.current++;setter(value);setView(null);setResult(null);setManual('');setNotice('');setBusy(false)
+    generation.current++;previewGeneration.current++;setter(value);setView(null);setResult(null);setManual('');setNotice('');setBusy(false);setCompleted(null);setPreviewPending(true)
     setAmbiguity('reject')
   }
-  function selectTime(value){if(value===time&&ambiguity==='reject')return;previewGeneration.current++;setTime(value);setAmbiguity('reject');setManual('');setNotice('');setView(null)}
+  function selectTime(value){if(value===time&&ambiguity==='reject')return;previewGeneration.current++;setTime(value);setAmbiguity('reject');setManual('');setNotice('');setCompleted(null);setPreviewPending(true)}
   function updateMember(index,change){edit(setTeam,{...team,members:team.members.map((m,i)=>i===index?{...m,...change}:m)})}
   function updateWindow(mi,wi,change){updateMember(mi,{windows:team.members[mi].windows.map((w,i)=>i===wi?{...w,...change}:w)})}
   async function request(path,body,onSuccess){
     if(epoch.current!==gatewayActivationEpoch()){resetScope();return}
     const seq=++generation.current,captured=epoch.current
-    setBusy(true);setNotice('');setManual('')
+    setBusy(true);setNotice('');setManual('');setCompleted(null)
     try{
       const answer=await ctx.rest(path,{method:'POST',body})
       if(seq!==generation.current||captured!==gatewayActivationEpoch())return
@@ -176,19 +201,23 @@ function Planner({ctx,profile}) {
     finally{if(seq===generation.current)setBusy(false)}
   }
   async function copy(){
-    if(!view)return
+    if(!view||previewPending)return
     if(epoch.current!==gatewayActivationEpoch()){resetScope();return}
-    const text=proposal(view)+(view.all_available?'':'\nNote: this time is outside at least one member’s work hours.')
-    try{const ok=await ctx.os.writeClipboard(text);if(!ok)throw Error('clipboard');setNotice('Meeting proposal copied.')}
-    catch{setManual(text);setNotice('Select and copy the proposal below.')}
+    const copiedView=view,seq=previewGeneration.current,captured=epoch.current
+    const text=proposal(copiedView)+(copiedView.all_available?'':'\nNote: this time is outside at least one member’s work hours.')
+    try{
+      const ok=await ctx.os.writeClipboard(text);if(!ok)throw Error('clipboard')
+      if(seq!==previewGeneration.current||captured!==gatewayActivationEpoch())return
+      setNotice('Meeting proposal copied. No calendar event created.');setCompleted(copiedView)
+    }catch{if(seq===previewGeneration.current&&captured===gatewayActivationEpoch()){setManual(text);setNotice('Select and copy the proposal below. No calendar event created.')}}
   }
   function chooseSlot(slot){
     const choice=slot.reference_start.fold?'later':'earlier'
     if(date===slot.reference_start.date&&time===slot.reference_start.local.slice(11,16)&&ambiguity===choice)return
-    previewGeneration.current++;setView(null);setDate(slot.reference_start.date);setTime(slot.reference_start.local.slice(11,16))
+    previewGeneration.current++;setPreviewPending(true);setCompleted(null);setDate(slot.reference_start.date);setTime(slot.reference_start.local.slice(11,16))
     setAmbiguity(choice);setManual('');setNotice('')
   }
-  return h('main',{className:'penguin-page'},h('style',{},css+introCss),intro?h(ControlRoom,{ctx,onContinue:()=>setIntro(false)}):h('div',{className:'p-wrap'},
+  return h('main',{className:'penguin-page'},h('style',{},css+introCss+experienceCss),intro?h(ControlRoom,{ctx,onContinue:()=>setIntro(false)}):h('div',{className:'p-wrap'},
     h('header',{className:'p-top'},h(Wordmark),h('button',{className:'p-replay',onClick:()=>setIntro(true)},'Replay arrival'),h('span',{className:'p-tag'},`ANTARCTIC TIMEKEEPER · ${profile}`)),
     h('section',{className:'p-hero'},h('div',{},h('span',{className:'p-badge'},'MANY PLACES. ONE MOMENT.'),
       h('h1',{},'The world runs on different hours.'),h('p',{className:'p-lead'},'One cool penguin. A whole world of teammates. Find your shared moment from the Antarctic control room.')),h(PenguinArt,{ctx})),
@@ -207,12 +236,13 @@ function Planner({ctx,profile}) {
       previewError&&h('div',{className:'p-status',role:'status'},previewError.message,
         previewError.code==='ambiguous_local_time'&&h('div',{className:'p-options'},...['earlier','later'].map(choice=>h('button',{className:'p-secondary',key:choice,onClick:()=>setAmbiguity(choice)},`Use ${choice} occurrence`))))),
     h('div',{className:'p-row p-between p-overview'},h('h2',{},`Your ${team.members.length===4?'four':team.members.length} places`),h('span',{className:'p-small'},team.name)),
-    h('section',{className:'p-clocks','aria-label':'Side-by-side team clocks'},...team.members.map((member,i)=>h(ClockCard,{key:i,index:i,member,view:view?.members[i]}))),
+    h('section',{className:'p-clocks','aria-label':'Side-by-side team clocks','aria-busy':previewPending},...team.members.map((member,i)=>h(ClockCard,{key:i,index:i,member,view:view?.members[i]}))),
     h('section',{className:'p-summary','aria-live':'polite'},
-      h('div',{},h('h2',{},view?`${view.members.filter(m=>m.available).length} of ${team.members.length} can fit the full meeting`:'Choose a valid time to compare'),
+      h('div',{},h('h2',{},previewPending?'Updating everyone’s clocks…':view?`${view.members.filter(m=>m.available).length} of ${team.members.length} can fit the full meeting`:'Choose a valid time to compare'),
         h('div',{className:'p-small'},view?`${view.start_utc} → ${view.end_utc} · IANA ${view.database.iana_version}`:'Penguin checks the whole meeting, including daylight-saving transitions.')),
-      h('button',{className:'p-primary',disabled:!view,onClick:copy},'Copy meeting proposal ↗')),
-    notice&&h('div',{className:'p-status',role:'status'},notice),manual&&h('pre',{className:'p-manual',tabIndex:0,'aria-label':'Meeting proposal to copy'},manual),
+      h('button',{className:'p-primary',disabled:!view||previewPending,onClick:copy},'Copy meeting proposal ↗')),
+    notice&&!completed&&h('div',{className:'p-status',role:'status'},notice),manual&&h('pre',{className:'p-manual',tabIndex:0,'aria-label':'Meeting proposal to copy'},manual),
+    completed&&h(SendOff,{ctx,slot:completed,onClose:()=>setCompleted(null)}),
     h('details',{className:'p-settings'},h('summary',{},'Edit your colony · people, work hours & saved teams'),
       h('p',{className:'p-sub'},'Confirm every person’s IANA zone. Work bars show local wall-clock hours; folds repeat and gaps are skipped in the precise calculation.'),
       h('div',{className:'p-teamhead'},h(Field,{label:'Team name',value:team.name,onChange:v=>edit(setTeam,{...team,name:v}),maxLength:80})),
