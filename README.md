@@ -6,6 +6,10 @@ Penguin is a native Hermes Agent plugin for distributed teams: precise time conv
 
 This release candidate is not yet listed in the catalog. The electric-blue Antarctic control room uses Crystal's Penguin illustration and a crisp PENGUIN dot-matrix wordmark, with four clocks across on desktop and two columns on small screens. A 3.6-second arrival screen can be skipped or replayed; reduced-motion preferences disable its entrance animation. It is a local UI animation, not a generated video, and plays no audio.
 
+![Penguin's four-clock planner inside Hermes Desktop](docs/native-planner.png)
+
+Captured from the actual official Hermes v0.23.0 Electron app, using its supported development build and a real isolated gateway. The viewport was enlarged for this screenshot. The backend status indicates that no model provider is configured; Penguin's deterministic planner and saved teams work without one. All displayed people and schedules are fictional. [Antarctic arrival screen](docs/native-arrival.png).
+
 ## Install locally
 
 Requires Python 3.11+ and **Hermes >=0.23.0**. Tested against official release commit `2bd378ed1b8d6bf2192cb26e0a55ff3091e6bd19`. Use a fresh development profile/home for the prototype. The `penguin` folder itself is the installable package; do not copy the surrounding workspace, references, environments or evidence.
@@ -92,6 +96,6 @@ Integration checks need Hermes's runtime dependencies plus FastAPI and httpx. Te
 
 ## Origin and licensing
 
-The scheduling behavior and four-clock interaction evolve Crystal's earlier browser-based team time planner. That original checked one instant; Penguin adds a native agent API, full meeting checks, profile persistence and a shared Python backend. All fixtures and screenshots prepared for this package use fictional people. The illustration was supplied by Crystal and is bundled unchanged; the plugin has no music service or generated soundtrack dependency.
+The scheduling behavior and four-clock interaction evolve Crystal's earlier browser-based team time planner. That original checked one instant; Penguin adds a native agent API, full meeting checks, profile persistence and a shared Python backend. All fixtures and screenshots prepared for this package use fictional people. The AI-generated illustration was supplied by Crystal and is bundled unchanged; the plugin has no music service or generated soundtrack dependency.
 
 Penguin's code, tests and documentation are MIT-licensed; see `LICENSE`. The illustration is separately permitted for use and redistribution with Penguin and its demonstrations; see `assets/NOTICE.md` and `LICENSE_STATUS.md`. Bundled timezone data retains its upstream license notices in `tzdb/licenses/`. No ElevenLabs service or code is used; its official plugin was only a reference for supported Desktop surfaces.

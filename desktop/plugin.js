@@ -43,7 +43,7 @@ function ControlRoom({ctx,onContinue}) {
   useEffect(()=>{const timer=setTimeout(onContinue,3600);return()=>clearTimeout(timer)},[])
   return h('section',{className:'p-intro','aria-label':'Antarctic control room'},
     h('div',{className:'p-mountains','aria-hidden':true}),h('div',{className:'p-ice','aria-hidden':true}),h('div',{className:'p-station','aria-hidden':true}),
-    h('div',{className:'p-console'},h(PenguinArt,{ctx}),h('h1',{},'你們的時間，由我控管！'),
+    h('div',{className:'p-console'},h(PenguinArt,{ctx}),h('h1',{},'Your time is under my command.'),
       h('p',{},'COMMANDER PENGUIN · YOUR SHARED MOMENT AWAITS'),h('button',{onClick:onContinue},'Enter planner · 略過開場')))
 }
 
