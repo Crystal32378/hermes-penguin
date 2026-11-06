@@ -36,7 +36,9 @@ Native macOS verification used the unmodified official v0.23.0 source-built Elec
 
 Brand specification: [English](docs/BRAND_GUIDELINES.md) · [繁體中文](docs/BRAND_GUIDELINES.zh-TW.md).
 
-Changes, validation and distribution scope: [0.1.1 review notes](docs/RELEASE_NOTES_0.1.1.md).
+Changes, validation and distribution scope: [0.2.0 review notes](docs/RELEASE_NOTES_0.2.0.md) · [0.1.1 review notes](docs/RELEASE_NOTES_0.1.1.md).
+
+0.2.0 adds an illustrated control-room arrival, a Commander dispatch line that commends teammates who cannot move their time zones, per-person `SALUTE` medals, an APPROVED stamp and a short exit in which the commander says “I’ll be back.” and dives. All of it is local, silent and non-blocking, and reduced motion is respected.
 
 The original Penguin typography is retained: the Antarctic status line, availability badges, replay control and IANA zone labels keep their compact monospace character. The upper selected-time input now explicitly shares the clock cards’ numeral family, weight, tabular-number feature and tracking. The PENGUIN wordmark remains a drawn dot matrix. Fonts resolve locally through system font stacks; no commercial website fonts, trial font files or external font requests are bundled.
 

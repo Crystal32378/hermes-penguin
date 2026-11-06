@@ -39,3 +39,10 @@
 4. 新的品牌方向需要新比較稿；既有被認可的影片和素材保留，不覆蓋。
 
 技術對照：[英文規範](BRAND_GUIDELINES.md)；實作位於 `desktop/plugin.js`。
+
+## 0.2.0 新增元素沿用的角色
+
+- Commander 指令列標籤 `COMMANDER`：控制室狀態（等寬、全大寫、1.7px）；台詞用一般無襯線。
+- `SALUTE`、`Encore`：與 `Replay arrival` 同一種技術小按鈕。
+- 蓋章上的 `APPROVED`：可用性徽章字（等寬 700、0.5px）。
+- 背景、指令列框、勳章、蓋章是同一套控制室插畫（`assets/kit/`），不另造字體。

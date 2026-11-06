@@ -25,6 +25,19 @@ def art():
     return {"src": "data:image/png;base64," + b64encode(data).decode("ascii")}
 
 
+_KIT = {"background": "control-room.webp", "banner": "commander-banner.webp",
+        "medal": "commendation-medal.webp", "stamp": "approved-stamp.webp"}
+
+
+@router.get("/art/kit")
+@lru_cache(maxsize=1)
+def art_kit():
+    """Fixed bundled control-room artwork (background, dispatch frame, medal, stamp)."""
+    base = Path(__file__).resolve().parents[1] / "assets/kit"
+    return {key: "data:image/webp;base64," + b64encode((base / name).read_bytes()).decode("ascii")
+            for key, name in _KIT.items()}
+
+
 @router.post("/preview")
 def preview(body: dict):
     return _engine.execute("preview", body)

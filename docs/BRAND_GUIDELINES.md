@@ -40,3 +40,10 @@ The numeric contract is explicit in `desktop/plugin.js` through `--p-mono`. Test
 ## Review gate
 
 Preserve the four specifically approved text styles above before changing a global font rule. Review desktop and phone screenshots, the selected/card numeral match, long IANA names, disabled/error states and reduced motion. Changes to visual personality need a new comparison against Crystal's accepted reference, not an assumption that more uniform is better.
+
+## Roles reused by 0.2.0 elements
+
+- Commander dispatch label `COMMANDER`: control-room status (monospace, uppercase, 1.7px); the line itself is regular sans.
+- `SALUTE` and `Encore`: the same technical button as `Replay arrival`.
+- `APPROVED` on the stamp: availability-badge type (monospace 700, 0.5px).
+- Background, dispatch frame, medal and stamp are one control-room illustration set (`assets/kit/`); no new typefaces.
