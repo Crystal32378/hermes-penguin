@@ -36,6 +36,8 @@ Native macOS verification used the unmodified official v0.23.0 source-built Elec
 
 Brand specification: [English](docs/BRAND_GUIDELINES.md) · [繁體中文](docs/BRAND_GUIDELINES.zh-TW.md).
 
+Changes, validation and distribution scope: [0.1.1 review notes](docs/RELEASE_NOTES_0.1.1.md).
+
 The original Penguin typography is retained: the Antarctic status line, availability badges, replay control and IANA zone labels keep their compact monospace character. The upper selected-time input now explicitly shares the clock cards’ numeral family, weight, tabular-number feature and tracking. The PENGUIN wordmark remains a drawn dot matrix. Fonts resolve locally through system font stacks; no commercial website fonts, trial font files or external font requests are bundled.
 
 Moving the shared timeline starts a backend preview immediately. Previous clocks remain readable while an update is in flight, with an updating state and copying disabled; only the newest response is accepted. A stale clipboard result cannot display a completion for a new selection or another profile. The completion panel remains in the planner, is dismissible, respects reduced motion and does not autoplay audio. Separate narrated demo media is not part of this package.
