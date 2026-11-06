@@ -1,0 +1,5 @@
+[
+  {"tool":"penguin_convert","arguments":{"local_time":"2026-11-16T21:00","source_zone":"Asia/Taipei","target_zones":["America/New_York","Europe/London","America/Los_Angeles"]}},
+  {"tool":"penguin_convert","arguments":{"local_time":"2026-11-01T01:30","source_zone":"America/New_York","target_zones":["Asia/Taipei"]}},
+  {"tool":"penguin_convert","arguments":{"local_time":"2026-11-01T01:30","source_zone":"America/New_York","target_zones":["Asia/Taipei"],"ambiguity":"later"}}
+]

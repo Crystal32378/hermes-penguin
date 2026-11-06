@@ -1,0 +1,2 @@
+# The engine uses Python 3.11+ stdlib and bundled IANA data.
+# Desktop routes use FastAPI supplied by Hermes' web/desktop runtime.

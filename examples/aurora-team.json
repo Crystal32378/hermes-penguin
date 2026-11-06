@@ -1,0 +1,9 @@
+{
+  "name": "Aurora Studio (fictional)",
+  "members": [
+    {"name": "Mika", "zone": "Asia/Taipei", "windows": [{"start": "20:00", "end": "23:00", "weekdays": [0, 1, 2, 3, 4]}]},
+    {"name": "Rowan", "zone": "America/New_York", "windows": [{"start": "08:00", "end": "11:00", "weekdays": [0, 1, 2, 3, 4]}]},
+    {"name": "Ivo", "zone": "Europe/London", "windows": [{"start": "12:00", "end": "17:00", "weekdays": [0, 1, 2, 3, 4]}]},
+    {"name": "Nora", "zone": "America/Los_Angeles", "windows": [{"start": "05:00", "end": "09:00", "weekdays": [0, 1, 2, 3, 4]}]}
+  ]
+}
