@@ -71,7 +71,7 @@ const kitCss = `
 @keyframes p-pan{from{transform:scale(1.08)}to{transform:scale(1)}}
 .penguin-page .p-dispatch-art{position:relative;display:block;padding:0;background:none;border:0;margin:16px auto 0;max-width:980px}
 .p-dispatch-art .p-dispatch-frame{display:block;width:100%;height:auto;filter:drop-shadow(4px 4px 0 #03091d)}
-.p-dispatch-art .p-dispatch-copy{position:absolute;left:46%;top:13%;width:46%;height:36%;display:flex;flex-direction:column;justify-content:center;gap:4px;color:#11172c}
+.p-dispatch-art .p-dispatch-copy{position:absolute;left:46%;top:20%;width:46%;height:34%;display:flex;flex-direction:column;justify-content:center;gap:4px;color:#11172c}
 .p-dispatch-art .p-dispatch-copy b{color:#1845ff}
 .p-dispatch-art .p-dispatch-line{font-size:clamp(12px,1.4cqw,16px);line-height:1.3;font-weight:650}
 .penguin-page .p-dispatch-line{display:block;animation:p-transmit 420ms steps(18,end)}
