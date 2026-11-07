@@ -1,5 +1,5 @@
 import { createElement as h, Fragment, useEffect, useRef, useState } from 'react'
-import { ROUTES_AREA, SIDEBAR_NAV_AREA, host, useValue, gatewayActivationEpoch } from '@hermes/plugin-sdk'
+import { ROUTES_AREA, SIDEBAR_NAV_AREA, host, useValue, gatewayActivationEpoch, createBudgetedLoop } from '@hermes/plugin-sdk'
 
 const weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -100,6 +100,267 @@ const kitCss = `
 @container(max-width:640px){.penguin-page .p-dispatch-art{background:#09152e;border:1px solid #315dff;border-radius:3px;padding:10px 14px}.p-dispatch-art .p-dispatch-frame{display:none}.p-dispatch-art .p-dispatch-copy{position:static;width:auto;height:auto;color:#f5f2dc}.p-dispatch-art .p-dispatch-copy b{color:#69bcff}.p-dispatch-art .p-dispatch-line{font-size:13px;font-weight:400}.p-sendoff.p-has-stamp .p-sendoff-copy{padding-right:0}}
 @container(max-width:480px){.p-sendoff .p-stamp-art{position:relative;top:auto;right:auto;display:block;width:86px;height:85px;margin:0 0 10px;transform:rotate(-9deg)}.p-exit .p-walker{width:66px}.p-exit .p-bubble{left:auto;right:8px;font-size:12px}}
 `
+
+// Optional music visualization. MiniMax 'Polar Frequency' track + offline features; no microphone, network stream
+// or runtime analysis. Private test copy only: the track is not MIT and not cleared for redistribution.
+const audioLabCss = `
+.penguin-page.p-audio-prototype{--p-audio-pulse:0}
+.p-audio-prototype .p-hero{isolation:isolate;background:linear-gradient(176deg,#08112c 0%,#0c1a4d 52%,#1638c8 86%,#1945ff 100%)}
+.p-audio-prototype .p-hero>.p-sky{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:block}
+.p-audio-prototype .p-polar-strip{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin:10px 2px 0;color:#c1cbed}
+.p-polar-strip .p-polar-status{font:10px var(--p-mono);text-transform:uppercase;letter-spacing:1.7px;color:#c1cbed;min-width:0}
+.p-polar-strip .p-polar-status b{color:#fff2d2;font-weight:400}
+.p-polar-strip .p-polar-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.p-polar-strip button{background:none;color:#c1cbed;border:1px solid #52638d;border-radius:3px;padding:5px 8px;font:10px var(--p-mono)}
+.p-polar-strip button:hover{border-color:#91acff;color:#fff2d2}
+.p-polar-strip button[aria-pressed=true]{border-color:#fff2d2;color:#fff2d2}
+.p-polar-strip button.p-audio-play[data-playing=true]{border-color:#91acff;color:#fff2d2;background:#122954}
+.p-polar-strip label{display:flex;align-items:center;gap:5px;font:10px var(--p-mono);color:#c1cbed}
+.penguin-page .p-polar-strip input[type=range]{width:64px;height:20px;margin:0;padding:0;border:0;background:none;accent-color:#91acff}
+.penguin-page .p-polar-strip input[type=checkbox]{margin:0}
+.p-polar-strip .p-audio-state{flex:1 0 100%;font:10px var(--p-mono);color:#8fa3d6;min-height:14px}
+.p-audio-prototype .p-clockcard{position:relative}.p-audio-prototype .p-clockcard:after{content:'';position:absolute;top:8px;right:10px;width:28px;height:3px;pointer-events:none;background:repeating-linear-gradient(90deg,#285aff 0 5px,transparent 5px 8px);opacity:calc(.12 + var(--p-audio-pulse)*.58);transition:opacity 120ms linear}
+.p-audio-prototype[data-audio-still=true] .p-clockcard:after,.p-audio-prototype[data-audio-still=true] .p-sendoff .p-aurora{transition:none;animation:none}
+@media(prefers-reduced-motion:reduce){.p-audio-prototype .p-clockcard:after{transition:none}}
+@container(max-width:480px){.p-polar-strip{margin-top:8px}.p-polar-strip .p-polar-status{flex-basis:100%;font-size:9px;letter-spacing:1px}}
+`
+
+// Penguin halftone aurora. Fixed dot lattice; only dot size and ink change.
+// Availability decides how far and how bright the light reaches; music only
+// moves it (phase, sway, ray length, crest sparkle). Pure functions + painter.
+
+export function polarAvailability(available,total,valid=true){
+  const ratio=valid&&total>0?Math.max(0,Math.min(1,available/total)):0
+  return {ratio,extent:valid?.30+.70*ratio:.22,light:valid?.16+.84*ratio:.10}
+}
+
+// Deterministic per-column hash (no Math.random): same lattice every render.
+function hash(i){let x=Math.imul(i^0x9e3779b9,0x85ebca6b);x^=x>>>13;x=Math.imul(x,0xc2b2ae35);x^=x>>>16;return (x>>>0)/4294967296}
+
+// Two asymmetric curtains, in hero-relative units (u: 0..1 across, v: 0..1 down).
+// Left: a wide swoop that runs high over the headline, dips between copy and
+// art, then lifts. Right: narrower, climbing behind the illustration.
+const CURTAINS=[
+  {from:-.03,to:.86,top:.10,depth:.50,t0:.66,s:.24,tilt:.04,width:.050,glow:.20,drip:.40,speed:.55,sway:.040,k:3.6},
+  {from:.58,to:1.04,top:.70,depth:-.52,t0:1.0,s:.55,tilt:0,width:.042,glow:.16,drip:.30,speed:-.42,sway:.030,k:5.0}
+]
+
+export function curtainY(C,t,phase,low,c){
+  return C.top+C.depth*Math.exp(-(((t-C.t0)/C.s)**2))+C.tilt*t
+    +(C.sway*(1+1.6*low))*Math.sin(t*C.k+phase*C.speed*2.1+c*1.7)
+    +.010*Math.sin(t*13.0-phase*C.speed*3.3+c)
+}
+
+export function polarIntensity(u,v,col,state){
+  // Returns [body intensity 0..1, crest 0..1]. state: {extent, light, phase, low, mid}
+  let I=0,K=0
+  for(let c=0;c<CURTAINS.length;c++){
+    const C=CURTAINS[c]
+    // Availability widens each curtain from its own anchor side.
+    const span=C.to-C.from, reach=state.extent
+    const a=c===0?C.from:C.to-span*reach, b=c===0?C.from+span*reach:C.to
+    if(u<a-.12||u>b+.12)continue
+    const t=(u-C.from)/span
+    const edge=Math.min(1,Math.max(0,(u-a)/.12),Math.max(0,(b-u)/.12))**1.5
+    const d=v-curtainY(C,t,state.phase,state.low,c)
+    const crest=Math.exp(-((d/C.width)**2))
+    // Soft halftone body: wider above the crest (the curtain), short below.
+    const body=.92*Math.exp(-(Math.abs(d/(d<0?C.glow:C.glow*.38))**1.35))
+    let ray=0
+    if(d>0&&hash(col*7+c*131)>.42){const len=C.drip*(.3+.7*hash(col*13+c))*(.7+.5*state.mid);ray=d<len?.62*(1-d/len)**1.05:0}
+    I=Math.max(I,edge*Math.min(1,Math.max(body,ray)))
+    K=Math.max(K,edge*crest)
+  }
+  return [Math.min(1,I*state.light),K*state.light]
+}
+
+// Halftone painter. Lattice pitch in CSS px; dots never move, only resize/recolour.
+function paintPolar(canvas,scene,motion,opts={}){
+  const g=canvas.getContext('2d');if(!g)return
+  const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return
+  const dpr=Math.min(1.5,window.devicePixelRatio||1)
+  const W=Math.round(w*dpr),H=Math.round(h*dpr)
+  if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}
+  g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h)
+  const a=polarAvailability(scene.available,scene.total,scene.valid)
+  const pitch=opts.pitch||(w<520?7:9),half=pitch/2
+  const state={extent:scene.extent??a.extent,light:scene.light??a.light,phase:motion.phase||0,low:motion.low||0,mid:motion.mid||0,high:motion.high||0}
+  const scrim=opts.scrim // {x0,y0,x1,y1} in px: keep copy readable
+  const cols=Math.ceil(w/pitch)+1,rows=Math.ceil(h/pitch)+1
+  const blue=[],cream=[],deep=[]
+  for(let j=0;j<rows;j++){
+    const y=j*pitch+half, v=y/h
+    for(let i=0;i<cols;i++){
+      const x=i*pitch+half,u=x/w
+      let [I,K]=polarIntensity(u,v,i,state)
+      const under=scrim&&x>scrim.x0&&x<scrim.x1&&y>scrim.y0&&y<scrim.y1
+      if(under){I=Math.min(I*.75,.42);K=0}
+      // Crest sparkle on onsets: a few existing lattice points flare, never new points.
+      if(motion.sparkle&&K>.35&&hash(i*31+j*17+((motion.beat|0)*97))>.9)K=Math.min(1,K+.4*motion.sparkle)
+      if(K>.62){cream.push(x,y,half*(.42+.40*K));continue}
+      if(I<.07){if(((i+j)&3)===0)deep.push(x,y,.55);continue}
+      blue.push(x,y,Math.max(.7,half*.88*Math.pow(I,.62)))
+    }
+  }
+  const draw=(list,colour)=>{g.fillStyle=colour;g.beginPath();for(let k=0;k<list.length;k+=3){g.moveTo(list[k]+list[k+2],list[k+1]);g.arc(list[k],list[k+1],list[k+2],0,6.2832)}g.fill()}
+  draw(deep,'#22336f');draw(blue,opts.blueInk||'#2f5bff');draw(cream,'#fff2d2')
+  canvas.dataset.extent=state.extent.toFixed(3);canvas.dataset.light=state.light.toFixed(3);canvas.dataset.phase=state.phase.toFixed(4)
+}
+
+// Offline features (25 fps) → motion at a playback time. No analysis at runtime.
+export function featuresAt(features,time){
+  if(!features)return {low:0,mid:0,high:0,onset:0,beat:0}
+  const n=features.low.length,p=((time%features.duration)+features.duration)%features.duration*features.fps
+  const i=Math.floor(p)%n,j=(i+1)%n,f=p-Math.floor(p)
+  const at=k=>(features[k][i]*(1-f)+features[k][j]*f)/99
+  const beatT=(time-features.beatOffset)*features.bpm/60
+  return {low:at('low'),mid:at('mid'),high:at('high'),onset:at('onset'),beat:Math.floor(beatT),beatPhase:beatT-Math.floor(beatT)}
+}
+
+export function polarStep(previous,feat,dt,playing){
+  const step=Math.max(0,Math.min(.1,dt))
+  const follow=(v,t,att,rel)=>v+(t-v)*(1-Math.exp(-step/(t>v?att:rel)))
+  const low=follow(previous.low||0,playing?feat.low:0,.35,1.4)
+  const mid=follow(previous.mid||0,playing?feat.mid:0,.45,1.6)
+  const high=follow(previous.high||0,playing?feat.high:0,.2,.8)
+  const sparkle=playing?Math.max((previous.sparkle||0)*Math.exp(-step/.35),feat.onset>.6?feat.onset:0):0
+  // Slow drift: ~0.12 rad/s idle in music, up to ~0.5 at full energy. Never a beat-by-beat jolt.
+  const phase=(previous.phase||0)+(playing?step*(.12+.30*low+.10*mid):0)
+  return {low,mid,high,sparkle,phase,beat:feat.beat||0}
+}
+
+
+// Gesture-started audio: the MiniMax "Polar Frequency" track plus features
+// analysed offline from that same file. Nothing is analysed or generated at runtime.
+function createPolarAudio(ctx) {
+  let state={status:'stopped',volume:30,muted:false,still:false,error:''}
+  const listeners=new Set()
+  let context=null,master=null,source=null,buffer=null,features=null
+  let position=0,startedAt=0,generation=0,disposed=false
+  const emit=patch=>{state={...state,...patch};listeners.forEach(fn=>fn(state))}
+  function applyGain(){
+    if(!context||context.state==='closed')return
+    master.gain.setTargetAtTime(state.muted?0:state.volume/100,context.currentTime,.03)
+  }
+  function pause(status='paused'){
+    generation++
+    if(source){position=(position+context.currentTime-startedAt)%buffer.duration;source.stop();source.disconnect();source=null}
+    if(context&&context.state!=='closed')void context.suspend().catch(()=>{})
+    emit({status})
+  }
+  function stop(){pause('stopped');position=0}
+  async function load(token){
+    const [music,feat]=await Promise.all([ctx.rest('/audio-lab/music',{method:'GET'}),features?null:ctx.rest('/audio-lab/features',{method:'GET'})])
+    if(disposed||token!==generation)return false
+    if(feat)features=feat
+    const bytes=Uint8Array.from(atob(music.base64),c=>c.charCodeAt(0))
+    buffer=await context.decodeAudioData(bytes.buffer)
+    return !disposed&&token===generation
+  }
+  async function play(){
+    if(disposed||state.status==='playing'||state.status==='starting')return
+    const token=++generation
+    emit({status:'starting',error:''})
+    try{
+      if(!context){context=new AudioContext();master=context.createGain();master.gain.value=0;master.connect(context.destination)}
+      if(!buffer&&!(await load(token)))return
+      await context.resume()
+      if(disposed||token!==generation)return
+      source=context.createBufferSource();source.buffer=buffer;source.loop=true;source.connect(master)
+      startedAt=context.currentTime;source.start(0,position%buffer.duration)
+      emit({status:'playing'});applyGain()
+    }catch{
+      if(disposed||token!==generation)return
+      stop();emit({status:'error',error:'Music unavailable. The meeting planner still works.'})
+    }
+  }
+  function audible(){return state.status==='playing'&&!state.muted&&state.volume>0&&!!buffer}
+  function time(){return audible()?(position+context.currentTime-startedAt)%buffer.duration:0}
+  function dispose(){
+    if(disposed)return
+    stop();disposed=true
+    master?.disconnect()
+    if(context&&context.state!=='closed')void context.close().catch(()=>{})
+    listeners.clear()
+  }
+  return {
+    snapshot:()=>state,subscribe:fn=>{listeners.add(fn);return()=>listeners.delete(fn)},
+    play,pause,stop,dispose,audible,
+    features:()=>audible()?featuresAt(features,time()):null,
+    setVolume:value=>{emit({volume:Math.max(0,Math.min(100,value))});applyGain()},
+    toggleMute:()=>{emit({muted:!state.muted});applyGain()},
+    setStill:value=>emit({still:value})
+  }
+}
+
+// Paints into the hero sky; renders the slim status/control strip under the hero.
+function PolarConsole({audio,rootRef,skyRef,heroCopyRef,available,total,valid,pending}){
+  const sceneRef=useRef(null),repaint=useRef(null)
+  const [state,setState]=useState(audio.snapshot)
+  const [systemStill,setSystemStill]=useState(()=>matchMedia('(prefers-reduced-motion: reduce)').matches)
+  useEffect(()=>audio.subscribe(setState),[audio])
+  const target=polarAvailability(available,total,valid)
+  sceneRef.current={...sceneRef.current,target,available,total,valid}
+  useEffect(()=>{
+    const root=rootRef.current,canvas=skyRef.current,media=matchMedia('(prefers-reduced-motion: reduce)')
+    if(!root||!canvas)return
+    let motion={low:0,mid:0,high:0,sparkle:0,phase:0,beat:0},last=0
+    let shown={...sceneRef.current.target},reducedMotion=media.matches
+    // Keep the preference from change events instead of polling a live
+    // MediaQueryList during every animation frame.
+    const still=()=>audio.snapshot().still||reducedMotion
+    const scrim=()=>{
+      const copy=heroCopyRef.current,hero=canvas.parentElement
+      if(!copy||!hero)return null
+      const r=hero.getBoundingClientRect(),t=copy.getBoundingClientRect()
+      return {x0:t.left-r.left-14,y0:t.top-r.top-10,x1:t.right-r.left+12,y1:t.bottom-r.top+8}
+    }
+    const paint=()=>paintPolar(canvas,{...sceneRef.current,extent:shown.extent,light:shown.light},motion,{scrim:scrim()})
+    // Availability eases in/out even when silent; music only moves the light.
+    const settling=()=>{const t=sceneRef.current.target;return Math.abs(shown.extent-t.extent)>.002||Math.abs(shown.light-t.light)>.002}
+    const flowing=()=>audio.audible()&&!still()
+    const idle=()=>!flowing()&&!settling()
+    const loop=createBudgetedLoop(now=>{
+      const dt=last?(now-last)/1000:.05;last=now
+      const t=sceneRef.current.target,k=still()?1:1-Math.exp(-Math.min(.1,dt)/.28)
+      shown={extent:shown.extent+(t.extent-shown.extent)*k,light:shown.light+(t.light-shown.light)*k}
+      const feat=flowing()?audio.features():null
+      motion=polarStep(motion,feat||{low:0,mid:0,high:0,onset:0,beat:motion.beat},dt,!!feat)
+      const pulse=feat?Math.max(0,1-feat.beatPhase*3)*(.35+.65*feat.onset):0
+      root.style.setProperty('--p-audio-pulse',pulse.toFixed(3))
+      root.dataset.audioActive=String(!!feat);root.dataset.audioStill=String(still())
+      paint()
+      if(idle())last=0
+    },{fps:20,idleWhen:idle})
+    const update=()=>{
+      const s=audio.snapshot()
+      root.dataset.audioActive=String(audio.audible()&&!still());root.dataset.audioStill=String(still())
+      if(!audio.audible()||still())root.style.setProperty('--p-audio-pulse','0')
+      if(still())shown={...sceneRef.current.target}
+      paint();loop.wake()
+    }
+    const unsubscribe=audio.subscribe(update)
+    const changeMotion=event=>{reducedMotion=event.matches;setSystemStill(reducedMotion);update()}
+    // Hidden or minimised pages pause the music. Returning never auto-resumes it.
+    const hide=()=>{if(document.hidden)audio.pause()}
+    media.addEventListener('change',changeMotion);document.addEventListener('visibilitychange',hide)
+    repaint.current=()=>{if(still())shown={...sceneRef.current.target};paint();loop.wake()}
+    const resize=new ResizeObserver(()=>paint());resize.observe(canvas)
+    update()
+    return()=>{loop.dispose();unsubscribe();resize.disconnect();repaint.current=null;media.removeEventListener('change',changeMotion);document.removeEventListener('visibilitychange',hide);audio.stop();root.style.setProperty('--p-audio-pulse','0')}
+  },[audio,rootRef,skyRef,heroCopyRef])
+  useEffect(()=>{repaint.current?.()},[available,total,valid])
+  const playing=state.status==='playing',starting=state.status==='starting'
+  const message=state.error||(starting?'Tuning in to Polar Frequency…':playing?(state.muted||!state.volume?'Muted · the sky rests':state.still||systemStill?'Playing · still sky':'Playing · the music moves the light; the colony sets how far it reaches'):'Sound is off · the sky still shows who can make it')
+  return h('div',{className:'p-polar-strip','aria-label':'Antarctic sky and music'},
+    h('span',{className:'p-polar-status',role:'status'},pending?'Checking the colony…':valid?h(Fragment,{},h('b',{},`${available} / ${total} can fit the full meeting`),' · the sky follows the colony'):'Choose a valid meeting time'),
+    h('span',{className:'p-polar-controls'},
+      h('button',{className:'p-audio-play','data-playing':playing,disabled:starting,onClick:()=>playing?audio.pause():audio.play(),'aria-label':playing?'Pause Polar Frequency':'Play Polar Frequency'},starting?'Tuning…':playing?'❚❚ Pause':'♪ Polar Frequency'),
+      h('button',{onClick:audio.toggleMute,'aria-pressed':state.muted,disabled:!playing,'aria-label':state.muted?'Unmute music':'Mute music'},state.muted?'Unmute':'Mute'),
+      h('label',{},'Vol',h('input',{type:'range',min:0,max:100,step:1,value:state.volume,'aria-label':'Music volume',onChange:e=>audio.setVolume(Number(e.target.value))})),
+      h('label',{},h('input',{type:'checkbox',checked:state.still||systemStill,disabled:systemStill,onChange:e=>audio.setStill(e.target.checked)}),'Still sky')),
+    h('span',{className:'p-audio-state'},h('span',{},message),' · ',h('span',{},'AI-generated music · MiniMax')))
+}
 
 const kitCache=new WeakMap()
 function useKit(ctx) {
@@ -290,7 +551,10 @@ function ClockCard({ctx,member,view,index,pending}) {
     view&&view.start.offset_minutes!==view.end.offset_minutes&&h('p',{className:'p-small'},`Clock changes during meeting → UTC${view.end.local.slice(16)}`))
 }
 
-function Planner({ctx,profile}) {
+function Planner({ctx,profile,audioFactory}) {
+  const audioRootRef=useRef(null),skyRef=useRef(null),heroCopyRef=useRef(null)
+  const [audio]=useState(audioFactory)
+  useEffect(()=>()=>audio.dispose(),[audio])
   const [intro,setIntro]=useState(true)
   const [team,setTeam]=useState(sample), [teamId,setTeamId]=useState('aurora-demo')
   const [date,setDate]=useState('2026-11-16'), [reference,setReference]=useState('Asia/Taipei'), [duration,setDuration]=useState('60')
@@ -358,10 +622,11 @@ function Planner({ctx,profile}) {
     previewGeneration.current++;setPreviewPending(true);setCompleted(null);setDate(slot.reference_start.date);setTime(slot.reference_start.local.slice(11,16))
     setAmbiguity(choice);setManual('');setNotice('')
   }
-  return h('main',{className:'penguin-page'},h('style',{},css+introCss+experienceCss+kitCss),intro?h(ControlRoom,{ctx,onContinue:()=>setIntro(false)}):h('div',{className:'p-wrap'},
+  return h('main',{className:'penguin-page p-audio-prototype',ref:audioRootRef},h('style',{},css+introCss+experienceCss+kitCss+audioLabCss),intro?h(ControlRoom,{ctx,onContinue:()=>setIntro(false)}):h('div',{className:'p-wrap'},
     h('header',{className:'p-top'},h(Wordmark),h('button',{className:'p-replay',onClick:()=>setIntro(true)},'Replay arrival'),h('span',{className:'p-tag'},`ANTARCTIC TIMEKEEPER · ${profile}`)),
-    h('section',{className:'p-hero'},h('div',{},h('span',{className:'p-badge'},'MANY PLACES. ONE MOMENT.'),
+    h('section',{className:'p-hero'},h('canvas',{className:'p-sky',ref:skyRef,'aria-hidden':true}),h('div',{ref:heroCopyRef},h('span',{className:'p-badge'},'MANY PLACES. ONE MOMENT.'),
       h('h1',{},'The world runs on different hours.'),h('p',{className:'p-lead'},'One cool penguin. A whole world of teammates. Find your shared moment from the Antarctic control room.')),h(PenguinArt,{ctx})),
+    h(PolarConsole,{audio,rootRef:audioRootRef,skyRef,heroCopyRef,available:view?.members.filter(m=>m.available).length||0,total:team.members.length,valid:!!view&&!previewPending,pending:previewPending}),
     h('section',{className:'p-panel p-planner','aria-label':'Meeting planner'},
       h('div',{className:'p-tools'},
         h(Field,{label:'Reference date',type:'date',min:'2000-01-01',max:'2100-12-31',value:date,onChange:v=>edit(setDate,v)}),
@@ -406,16 +671,24 @@ function Planner({ctx,profile}) {
     h('footer',{className:'p-foot'},'Penguin checks work-hour preferences. Confirm calendar conflicts and holidays separately. No invitations are sent.')))
 }
 
-function PenguinPage({ctx}) {
+function PenguinPage({ctx,audioFactory}) {
   const profile=useValue(host.state.profile)
-  return h(Planner,{ctx,profile,key:profile})
+  return h(Planner,{ctx,profile,audioFactory,key:profile})
 }
 
 export default {
   id:'penguin', name:'Penguin', defaultEnabled:false,
   register(ctx) {
+    const sessions=new Set()
+    const audioFactory=()=>{
+      const audio=createPolarAudio(ctx),dispose=audio.dispose
+      audio.dispose=()=>{dispose();sessions.delete(audio)}
+      sessions.add(audio)
+      return audio
+    }
+    ctx.onDispose(()=>{for(const audio of sessions)audio.dispose();sessions.clear()})
     ctx.registerMany([
-      {id:'page',area:ROUTES_AREA,data:{path:'/penguin'},render:()=>h(PenguinPage,{ctx})},
+      {id:'page',area:ROUTES_AREA,data:{path:'/penguin'},render:()=>h(PenguinPage,{ctx,audioFactory})},
       {id:'nav',area:SIDEBAR_NAV_AREA,data:{path:'/penguin',label:'Penguin',codicon:'globe'}}
     ])
   }

@@ -2,7 +2,9 @@
 
 **A penguin in Antarctica, keeping an eye on everyone's time.**
 
-0.2.1 changes the arrival button to **Skip intro**, including its accessible name. The arrival, commander dive, replay controls and reduced-motion behavior are retained.
+0.2.2 adds a halftone aurora to the control-room sky. The number of people who fit the entire meeting sets its brightness and reach; optional music adds flow. **Polar Frequency**, AI-generated with MiniMax, starts only after Play. Pause, mute, zero volume, hidden/minimised pages, **Still sky** and system reduced motion rest the sky. Still sky keeps the music playing. The original arrival, **Skip intro**, commander dive, replay and four-clock planner remain.
+
+This is a locally verified integration candidate; publication and the existing catalog PR update are separate steps. Audio is not MIT: see [audio notice](assets/audio-lab/NOTICE.md) and [0.2.2 validation](docs/VALIDATION_0.2.2.md).
 
 Penguin is a native Hermes Agent plugin for distributed teams: precise time conversion, meeting windows that fit the **whole** meeting, and saved team settings. Its optional Desktop page shows four people side by side with one shared time slider. Narrow screens use two columns and a horizontally scrollable timeline.
 
@@ -38,7 +40,7 @@ Native macOS verification used the unmodified official v0.23.0 source-built Elec
 
 Brand specification: [English](docs/BRAND_GUIDELINES.md) · [繁體中文](docs/BRAND_GUIDELINES.zh-TW.md).
 
-Changes, validation and distribution scope: [0.2.0 review notes](docs/RELEASE_NOTES_0.2.0.md) · [0.2.0 review notes](docs/RELEASE_NOTES_0.2.0.md) · [validation and limits](docs/VALIDATION_0.2.0.md).
+Changes, validation and distribution scope: [0.2.0 review notes](docs/RELEASE_NOTES_0.2.0.md) · [validation and limits](docs/VALIDATION_0.2.0.md).
 
 0.2.0 adds an illustrated control-room arrival, a Commander dispatch line that commends teammates who cannot move their time zones, per-person `SALUTE` medals, an APPROVED stamp and a short exit in which the commander says “I’ll be back.” and dives. All of it is local, silent and non-blocking, and reduced motion is respected.
 
@@ -96,7 +98,7 @@ This returns `ambiguous_local_time` with **05:30Z and 06:30Z** candidates. Ask t
 
 Runtime makes **no external network calls**, launches no shell or background process, reads no credentials, and has no telemetry. It reads only its bundled files and its own profile-scoped plugin state. Agent tool inputs/outputs are visible to the active Hermes conversation/model as usual.
 
-The Python entry point uses `ctx.register_tool`; persistence uses `ctx.state`. Desktop uses only `@hermes/plugin-sdk` and React: a route, sidebar navigation, plugin-scoped `ctx.rest` and explicit-gesture clipboard writes. Its FastAPI routes under `/api/plugins/penguin/` share the engine and `PluginState("penguin")`; Hermes supplies profile routing and authentication. Backend routes are `preview`, `convert`, `overlap`, `teams/save` and `teams/get`. The read-only `art` and `art/kit` routes serve one fixed bundled PNG and four fixed WebP artwork files as data URIs through the same host bridge, with no arbitrary file path input. Successful art-kit loads are shared in memory; failed or incomplete loads are evicted so a later mount (for example Replay arrival) can retry. Artwork failure leaves CSS/SVG/text fallbacks usable; there is no background retry loop. The preview checks every minute of the selected meeting. No host functions, markup, stores or prototypes are patched. A connection/profile change clears the editor's transient data; stale responses are ignored.
+The Python entry point uses `ctx.register_tool`; persistence uses `ctx.state`. Desktop uses only `@hermes/plugin-sdk` and React: a route, sidebar navigation, plugin-scoped `ctx.rest` and explicit-gesture clipboard writes. Its FastAPI routes under `/api/plugins/penguin/` share the engine and `PluginState("penguin")`; Hermes supplies profile routing and authentication. Backend routes are `preview`, `convert`, `overlap`, `teams/save` and `teams/get`. Fixed, read-only `audio-lab/music` and `audio-lab/features` routes serve the bundled track and its offline frequency curves only after Play; they accept no paths, uploads or microphone input. The obsolete briefing audio/route is absent. Audio and its curves share the playback clock, rather than reacting to live microphone input. The read-only `art` and `art/kit` routes serve one fixed bundled PNG and four fixed WebP artwork files as data URIs through the same host bridge, with no arbitrary file path input. Successful art-kit loads are shared in memory; failed or incomplete loads are evicted so a later mount (for example Replay arrival) can retry. Artwork failure leaves CSS/SVG/text fallbacks usable; there is no background retry loop. The preview checks every minute of the selected meeting. No host functions, markup, stores or prototypes are patched. A connection/profile change clears the editor's transient data; stale responses are ignored.
 
 ## Tests
 
@@ -104,13 +106,13 @@ Use a separate development environment with pytest 8+:
 
 ```bash
 python -m pytest tests -q
-# Five additional real-state/API integration tests require an official Hermes checkout:
+# Six additional real-state/API integration tests require an official Hermes checkout:
 HERMES_SOURCE=/absolute/path/to/hermes-agent python -m pytest tests -q
 ```
 
 Integration checks need Hermes's runtime dependencies plus FastAPI and httpx. Tests use temporary homes and fictional people. They cover DST gaps/folds, half-hour changes, skipped dates, international date boundaries, overnight weekday attribution, meeting duration, invalid input, deterministic output, data hashes, persistence, corruption preservation, concurrent distinct-team saves and profile isolation. `python -S` verifies the engine needs no installed third-party package.
 
-Browser regressions are development-only and are not a native Hermes substitute. With an isolated loopback harness serving the actual component and Python API, run `playwright-cli run-code --filename tests/desktop-recovery.js` for outage recovery; run `node tests/desktop-completion.mjs` with Playwright available for completion visibility, narrow dates, reduced motion, clipboard failure and invalid input. The latter uses a disposable headless profile and a synthetic clipboard. `PENGUIN_TEST_URL` selects the loopback harness; `PLAYWRIGHT_CHANNEL=chrome` can use an installed Chrome. See [validation notes](docs/VALIDATION_0.2.0.md).
+Reproducible lab.3 model, actual WebAudio, loop/performance, completion and artwork recovery checks are in [tests/browser/README.md](tests/browser/README.md). Browser regressions are development-only and are not a native Hermes substitute. With an isolated loopback harness serving the actual component and Python API, run `playwright-cli run-code --filename tests/desktop-recovery.js` for outage recovery; run `node tests/desktop-completion.mjs` with Playwright available for completion visibility, narrow dates, reduced motion, clipboard failure and invalid input. The latter uses a disposable headless profile and a synthetic clipboard. `PENGUIN_TEST_URL` selects the loopback harness; `PLAYWRIGHT_CHANNEL=chrome` can use an installed Chrome. See [validation notes](docs/VALIDATION_0.2.0.md).
 
 ## Origin and licensing
 

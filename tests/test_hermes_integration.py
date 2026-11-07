@@ -102,3 +102,21 @@ def test_real_backend_shares_tool_state_and_returns_errors(state):
     assert result["result"]["slots"][0]["start_utc"] == "2026-11-16T13:00Z"
     error = client.post("/api/plugins/penguin/convert", json={"local_time": "2026-03-08T02:30", "source_zone": "America/New_York", "target_zones": ["Asia/Taipei"]}).json()
     assert error["error"]["code"] == "nonexistent_local_time"
+
+
+def test_private_music_routes_are_fixed_and_byte_exact(state):
+    from base64 import b64decode
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    root = Path(__file__).parents[1]
+    spec = importlib.util.spec_from_file_location("penguin_audio_test_api", root / "dashboard/plugin_api.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    app = FastAPI()
+    app.include_router(mod.router, prefix="/api/plugins/penguin")
+    client = TestClient(app)
+    assert b64decode(client.get("/api/plugins/penguin/audio-lab/music").json()["base64"]) == (root / "assets/audio-lab/polar-frequency.mp3").read_bytes()
+    assert client.get("/api/plugins/penguin/audio-lab/features").json() == json.loads((root / "assets/audio-lab/polar-frequency.features.json").read_text())
+    assert client.get("/api/plugins/penguin/audio-lab/briefing").status_code == 404
+    assert not (root / "assets/audio-lab/briefing.mp3").exists()
+    assert client.get("/api/plugins/penguin/audio-lab/unknown.mp3").status_code == 404

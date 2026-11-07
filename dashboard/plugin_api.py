@@ -6,6 +6,7 @@ pure engine from the installed package; do not alter sys.path or host modules.
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from base64 import b64encode
+import json
 from functools import lru_cache
 
 from fastapi import APIRouter
@@ -36,6 +37,21 @@ def art_kit():
     base = Path(__file__).resolve().parents[1] / "assets/kit"
     return {key: "data:image/webp;base64," + b64encode((base / name).read_bytes()).decode("ascii")
             for key, name in _KIT.items()}
+
+
+@router.get("/audio-lab/music")
+@lru_cache(maxsize=1)
+def audio_lab_music():
+    """Bundled soundtrack: fixed MiniMax 'Polar Frequency' copy; no arbitrary paths."""
+    data = (Path(__file__).resolve().parents[1] / "assets/audio-lab/polar-frequency.mp3").read_bytes()
+    return {"base64": b64encode(data).decode("ascii")}
+
+
+@router.get("/audio-lab/features")
+@lru_cache(maxsize=1)
+def audio_lab_features():
+    """Features analysed offline from the same track (25 fps bands, onsets, beat grid)."""
+    return json.loads((Path(__file__).resolve().parents[1] / "assets/audio-lab/polar-frequency.features.json").read_text())
 
 
 @router.post("/preview")
