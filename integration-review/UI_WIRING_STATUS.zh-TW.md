@@ -1,6 +1,6 @@
 # Penguin 離線介面接線：本輪結果
 
-版本：0.2.3-integration-review.4。只在 integration_review_penguin worktree，本次只保存為本機 commit，未推送、安裝或合併。正式整合等官方討論區開放後再討論。
+版本：0.2.3-integration-review.4。只在 integration_review_penguin worktree，以本機 commit 保存並供公開 GitHub 試作分支備份，未安裝、合併或發布正式版本。正式整合等官方討論區開放後再討論。
 
 ## 已寫好
 

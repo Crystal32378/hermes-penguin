@@ -4,7 +4,7 @@
 
 ## 決定與範圍
 
-先把日曆與多人群組串接的離線試作保存到本機 Git。等官方討論區開放，再討論是否正式加入 Penguin。這個保存點沒有推送、合併、發布、修改官方 catalog、安裝插件或對外發言。
+先把日曆與多人群組串接的離線試作保存到本機 Git，再依要求備份至公開的 `Crystal32378/hermes-penguin`，只推送 `prototype/buzz-google-handoff` 試作分支。公開分支不是私人備份，也不是正式發行。等官方討論區開放，再討論是否正式加入 Penguin。沒有建立 PR、合併、發布正式版本、修改官方 catalog、安裝插件或對外發言。
 
 正式 0.2.2 位於另一個 `penguin` worktree；保存前核對 main 為 `5e3b213`，工作目錄乾淨。此分支從 0.2.2 功能基線 `d63015d` 延伸，沒有更動 main。
 
@@ -45,3 +45,9 @@ node tests/browser/model-check.mjs
 ```
 
 JS 依賴版本與完整測試前提見 `tests/browser/README.md`。card-harness/capture.mjs 使用同一份依賴設定；可以用 `PLAYWRIGHT_MODULE` 指向環境中已安裝的 Playwright。瀏覽器腳本只能在已允許的環境執行，不列為本次已通過項目。
+
+## 署名
+
+整理、保存與驗證：Murphy。
+
+保留昨晚的工作，讓下一步可以從這裡接著走。

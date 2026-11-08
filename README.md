@@ -1,4 +1,4 @@
-> PRIVATE INTEGRATION REVIEW: this worktree adds draft-only Slack/Buzz/Discord and Calendar handoffs, not live connectivity. See [the review](integration-review/INTEGRATION_REVIEW.zh-TW.md). Do not publish or install over the submitted 0.2.2 build.
+> UNRELEASED INTEGRATION REVIEW: this worktree adds draft-only Slack/Buzz/Discord and Calendar handoffs, not live connectivity. See [the review](integration-review/INTEGRATION_REVIEW.zh-TW.md). Development branch only: do not release or install over the submitted 0.2.2 build.
 
 # Penguin 🐧
 

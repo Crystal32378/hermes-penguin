@@ -11,10 +11,10 @@
 
 ## 已完成且可重跑
 
-這是私人、本機、**不能送出**的離線原型，不是已連線或可部署的功能。
+這是開發階段、**不能送出**的離線原型，不是已連線或可部署的功能。原始碼的公開試作分支不代表正式發行。
 
 - 正式 `penguin` 仍是獨立的 main worktree，版本 0.2.2。本機保存時確認 HEAD 為 `5e3b213`（Marketplace 狀態文件更新）；功能基線仍是 `d63015de74effae451d5286cc080b6a3afddd6ad`。本次沒有修改正式 worktree。
-- 原型位於獨立 worktree `integration_review_penguin`，分支 `prototype/buzz-google-handoff`，版本 `0.2.3-integration-review.4`。本次只保存為本機 commit；沒有 push、安裝、發布或改目錄 PR。等官方討論區開放後再討論正式整合。
+- 原型位於獨立 worktree `integration_review_penguin`，分支 `prototype/buzz-google-handoff`，版本 `0.2.3-integration-review.4`。本機 commit 保存後，另依要求備份至公開 GitHub 的同名試作分支；沒有安裝、合併、發布正式版本或改目錄 PR。等官方討論區開放後再討論正式整合。
 - `group_share.py`：以原本 `preview` 重新計算選定時間，保留現有 `desktop/plugin.js` 的 `proposal(slot)` 與 Copy 警告文字。測試直接以 Node 執行原本 JS 純函數，逐字比對。
 - Buzz 草稿綁定 HTTPS community、channel UUID、可選 thread root。Discord 草稿綁定 guild/channel/thread ID，禁止自動提及。兩者目標都標記為未驗證，沒有虛構 message ID 或 permalink。
 - 分享草稿可帶現有 SendOff PNG 的 hash、大小與 selection fingerprint；圖片來源、內容和目的地仍需審閱。這只是附件清單，不是已匯出、驗過或上傳圖片。PNG 簽名／大小檢查不等於完整影像驗證。
