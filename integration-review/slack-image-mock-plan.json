@@ -1,0 +1,130 @@
+{
+  "fixture": true,
+  "image_input": "Mock bytes, not a rendered PNG or visual verification.",
+  "real_account_or_channel": false,
+  "plan": {
+    "mode": "offline_slack_delivery_plan",
+    "sent": false,
+    "approved": false,
+    "live_transport_available": false,
+    "credentials_accessed": false,
+    "actual_grants_verified": false,
+    "bot_identity_verified": false,
+    "channel_membership_verified": false,
+    "destination": {
+      "platform": "slack",
+      "workspace_id": "T0123456789",
+      "channel_id": "C0123456789",
+      "thread_ts": "1794060000.000001"
+    },
+    "required_scopes": [
+      "files:write"
+    ],
+    "feature_scope_proposal": [
+      "chat:write",
+      "files:write"
+    ],
+    "share_draft": {
+      "mode": "offline_share_draft",
+      "sent": false,
+      "approved": false,
+      "live_transport_available": false,
+      "destination": {
+        "platform": "slack",
+        "workspace_id": "T0123456789",
+        "channel_id": "C0123456789",
+        "thread_ts": "1794060000.000001",
+        "verified": false
+      },
+      "selection_fingerprint": "72b2ae4512a3e893f2ec4ada66ee9122224a8b3535dddd1a7093ed0e048be726",
+      "content": "Meeting proposal · Penguin\n60 minutes · 2026-11-16T13:00Z → 2026-11-16T14:00Z\nA: 2026-11-16T21:00+08:00 → 2026-11-16T22:00+08:00 (Asia/Taipei)\nB: 2026-11-16T08:00-05:00 → 2026-11-16T09:00-05:00 (America/New_York)\nPlease confirm availability. No calendar event has been created.",
+      "attachment": {
+        "source_component": "existing SendOff",
+        "mime_type": "image/png",
+        "filename": "penguin-meeting-proposal.png",
+        "sha256": "b8c988e6389c6878408c5e173f055754302116e50b62db9b90ca879469a461fe",
+        "bytes": 41,
+        "selection_fingerprint": "72b2ae4512a3e893f2ec4ada66ee9122224a8b3535dddd1a7093ed0e048be726",
+        "visual_provenance_verified": false
+      },
+      "new_card_design": false,
+      "requires_organizer_review": true,
+      "message_id": null,
+      "permalink": null,
+      "discussion": "People discuss and confirm externally; this module neither reads nor tallies responses.",
+      "next_step": "After group discussion, organizer supplies attendee emails and reviews the separate Calendar invitation.",
+      "mention_policy": {
+        "parse": "none",
+        "link_names": false,
+        "mrkdwn": false,
+        "active_mention_syntax_rejected": true
+      },
+      "required_scopes": [
+        "files:write"
+      ],
+      "requires_before_send": [
+        "Verify dedicated bot identity, target workspace and membership in this exact private/public channel.",
+        "Verify this exact parent thread when supplied; a channel name or user membership is not bot access.",
+        "Review the existing PNG and full caption together. Obtain approval for the exact destination and data.",
+        "Use only reviewed chat:write/files:write access; no history, DM, app install or credential operations are implemented."
+      ],
+      "review_digest": "534f8aa76ac77a4d17038f0804cf1e66646723c3ebb5f56f4ef3008b2bc67a4e"
+    },
+    "steps": [
+      {
+        "id": "obtain_upload",
+        "method": "files.getUploadURLExternal",
+        "executed": false,
+        "arguments": {
+          "filename": "penguin-meeting-proposal.png",
+          "length": 41
+        }
+      },
+      {
+        "id": "upload_reviewed_bytes",
+        "operation": "upload_exact_reviewed_bytes",
+        "executed": false,
+        "provider_upload_url_available": false,
+        "url_from_step": "obtain_upload.upload_url",
+        "sha256": "b8c988e6389c6878408c5e173f055754302116e50b62db9b90ca879469a461fe",
+        "bytes": 41,
+        "requires": "Use only the upload URL returned by the authenticated Slack request; no caller-supplied endpoint."
+      },
+      {
+        "id": "complete_upload",
+        "method": "files.completeUploadExternal",
+        "executed": false,
+        "arguments_template": {
+          "files": [
+            {
+              "id_from_step": "obtain_upload.file_id",
+              "title": "Penguin meeting proposal"
+            }
+          ],
+          "channel_id": "C0123456789",
+          "thread_ts": "1794060000.000001",
+          "initial_comment": "Meeting proposal · Penguin\n60 minutes · 2026-11-16T13:00Z → 2026-11-16T14:00Z\nA: 2026-11-16T21:00+08:00 → 2026-11-16T22:00+08:00 (Asia/Taipei)\nB: 2026-11-16T08:00-05:00 → 2026-11-16T09:00-05:00 (America/New_York)\nPlease confirm availability. No calendar event has been created."
+        },
+        "provider_file_id_available": false
+      }
+    ],
+    "message_ts": null,
+    "permalink": null,
+    "requires_exact_review": true,
+    "before_any_live_operation": [
+      "Verify workspace, dedicated bot identity and access to the exact channel/thread.",
+      "Obtain any app installation or scope grant approval separately; none is provided here.",
+      "Show the exact caption, PNG, channel/thread and data recipients for organizer review.",
+      "Bind final action approval to this payload and image digest; an offline fixture receipt is not approval.",
+      "Use a durable operation journal; inspect ambiguous results before retrying, never double-post."
+    ],
+    "no_extra_access": [
+      "No channel/history search",
+      "No DMs",
+      "No app install",
+      "No Socket Mode",
+      "No calendar access"
+    ],
+    "plan_digest": "a7d7e73c1883fa1f4868304b10c4d419a9f177053cc1ffbcf74f76a89c307af7"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "display_information": {
+    "name": "Penguin Share Test",
+    "description": "Share a reviewed Penguin meeting proposal in an explicitly selected test channel.",
+    "background_color": "#164DFF"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "Penguin Share Test",
+      "always_online": false
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": ["chat:write", "files:write"]
+    }
+  },
+  "settings": {
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": false
+  }
+}

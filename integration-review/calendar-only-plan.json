@@ -1,0 +1,84 @@
+{
+  "mode": "offline_fixture_plan",
+  "executed": false,
+  "approved": false,
+  "live_transport_available": false,
+  "credentials_accessed": false,
+  "request": {
+    "method": "POST",
+    "origin": "https://www.googleapis.com",
+    "path": "/calendar/v3/calendars/fictional-only%40group.calendar.google.com/events",
+    "params": {
+      "sendUpdates": "all"
+    },
+    "body": {
+      "summary": "Fictional planning session",
+      "description": "Meeting proposed with Penguin.",
+      "start": {
+        "dateTime": "2026-11-16T13:00:00Z",
+        "timeZone": "UTC"
+      },
+      "end": {
+        "dateTime": "2026-11-16T14:00:00Z",
+        "timeZone": "UTC"
+      },
+      "attendees": [
+        {
+          "email": "a@example.com",
+          "responseStatus": "needsAction"
+        },
+        {
+          "email": "b@example.com",
+          "responseStatus": "needsAction"
+        }
+      ],
+      "guestsCanInviteOthers": false,
+      "guestsCanModify": false,
+      "guestsCanSeeOtherGuests": false,
+      "id": "penguin879156aae88c4b51aa1d7a0e47de366e"
+    }
+  },
+  "request_digest": "01555d432e41c8a32151a776da70b506e5527789380dbbd00595f5be880bc073",
+  "fixture_binding": {
+    "mode": "fixture_only",
+    "provider_verified": false,
+    "account_subject": "subject-fixture",
+    "account_email": "owner@example.com",
+    "oauth_client_id": "client-fixture",
+    "calendar_id": "fictional-only@group.calendar.google.com",
+    "created_by_client_id": "client-fixture",
+    "owner_subject": "subject-fixture",
+    "actor_subject": "subject-fixture",
+    "granted_scopes": [
+      "https://www.googleapis.com/auth/calendar.app.created"
+    ]
+  },
+  "review": {
+    "account_email": "owner@example.com",
+    "calendar_id": "fictional-only@group.calendar.google.com",
+    "attendees": [
+      "a@example.com",
+      "b@example.com"
+    ],
+    "guest_list_visible_to_guests": false,
+    "invite_notifications": "all",
+    "calendar_conflicts_checked": false,
+    "participant_agreement_verified": false,
+    "work_hours_fit": true,
+    "work_hours_warning": null,
+    "actor_subject": "subject-fixture",
+    "granted_scopes": [
+      "https://www.googleapis.com/auth/calendar.app.created"
+    ]
+  },
+  "required_before_live": [
+    "Replace fixture identity/provenance with validated, server-owned OAuth evidence.",
+    "Confirm this managed account has Calendar enabled and permits this OAuth client.",
+    "Check actual granted scopes; reject combined broad grants from previous consent.",
+    "Live negative test: primary and unrelated calendars must be inaccessible.",
+    "Review participants, exact time, externally agreed exceptions and the owner's confirmation; do not claim calendar conflicts were checked.",
+    "Store an approval bound to the exact payload and operation; a draft is not approval.",
+    "Use a durable operation journal; reconcile uncertain outcomes before retries."
+  ],
+  "plan_digest": "9d339d5a4a8f6dd2ad06cc5ac4b1761687d6761d8eaed4b79d3aaf21fe5b6929"
+}

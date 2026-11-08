@@ -259,6 +259,125 @@ def preview(args):
             "reference_start": converted["source"], "database": metadata()}
 
 
+# This review-only boundary does not import network, process, or credential APIs.
+def _handoff_email(value):
+    value = text(value, "email", 254)
+    if not re.fullmatch(r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?\.[A-Za-z]{2,63}", value):
+        raise InputError("invalid_email", "Supply an explicit conventional email address; do not infer one.")
+    local, domain = value.rsplit("@", 1)
+    if len(local) > 64 or local.startswith(".") or local.endswith(".") or ".." in value or any(not label or len(label) > 63 or label.startswith("-") or label.endswith("-") for label in domain.split(".")):
+        raise InputError("invalid_email", "Supply an explicit conventional email address; do not infer one.")
+    return local + "@" + domain.lower()
+
+
+def _handoff_relay(value):
+    from urllib.parse import urlsplit
+    value = text(value, "relay_url", 512)
+    try:
+        parsed = urlsplit(value)
+        host = parsed.hostname or ""
+        if (parsed.scheme != "https" or parsed.username or parsed.password or
+                parsed.path not in ("", "/") or parsed.query or parsed.fragment or
+                parsed.port not in (None, 443) or not re.fullmatch(r"[a-z0-9.-]+", host) or
+                "." not in host or host.endswith((".localhost", ".local")) or
+                all(c.isdigit() or c == "." for c in host) or ".." in host):
+            raise ValueError("Use a public HTTPS community origin.")
+    except ValueError as exc:
+        raise InputError("invalid_relay", "Use a public HTTPS community origin without credentials, path, query, or fragment.") from exc
+    return "https://" + host
+
+
+def prepare_handoff(args):
+    """Prepare Buzz and Google payloads only. A draft is never consent or delivery.
+
+    No credentials, state, subprocesses, network or UI access. Recompute the exact
+    slot so a caller cannot smuggle stale/edited UTC times into an event payload.
+    """
+    import hashlib
+    import json
+    from uuid import UUID
+    keys(args, ("selection", "title", "description", "google", "buzz"),
+         ("selection", "title", "google"))
+    slot = preview(args["selection"])
+    team = validate_team(args["selection"]["team"])
+    title = text(args["title"], "title", 160)
+    description = text(args["description"], "description", 2000) if "description" in args else "Meeting proposed with Penguin."
+
+    google = args["google"]
+    keys(google, ("account_email", "calendar_id", "attendees", "send_updates"),
+         ("account_email", "calendar_id", "attendees", "send_updates"))
+    account = _handoff_email(google["account_email"])
+    calendar_id = text(google["calendar_id"], "calendar_id", 254)
+    if calendar_id != "primary":
+        calendar_id = _handoff_email(calendar_id)
+    if google["send_updates"] not in ("all", "none"):
+        raise InputError("invalid_input", "send_updates must explicitly be all or none.")
+    people = google["attendees"]
+    if not isinstance(people, list) or len(people) != len(team["members"]):
+        raise InputError("invalid_attendees", "Provide an explicit email mapping for every selected team member.")
+    mapping, seen_emails = {}, set()
+    for person in people:
+        keys(person, ("member_name", "email"), ("member_name", "email"))
+        name = text(person["member_name"], "member_name")
+        email = _handoff_email(person["email"])
+        if name in mapping or email.casefold() in seen_emails:
+            raise InputError("invalid_attendees", "Member names and email addresses must be unique.")
+        mapping[name] = email
+        seen_emails.add(email.casefold())
+    if set(mapping) != {m["name"] for m in team["members"]}:
+        raise InputError("invalid_attendees", "Email mapping must exactly match the selected team members.")
+
+    relay = channel_id = thread_root = None
+    if "buzz" in args:
+        buzz = args["buzz"]
+        keys(buzz, ("relay_url", "channel_id", "thread_root_id"), ("relay_url", "channel_id"))
+        relay = _handoff_relay(buzz["relay_url"])
+        channel_id = text(buzz["channel_id"], "channel_id", 36)
+        try:
+            if str(UUID(channel_id)) != channel_id.lower():
+                raise ValueError("Noncanonical UUID")
+        except ValueError as exc:
+            raise InputError("invalid_channel", "Supply the exact Buzz channel UUID, not a display name.") from exc
+        thread_root = buzz.get("thread_root_id")
+        if thread_root is not None and (not isinstance(thread_root, str) or not re.fullmatch(r"[a-f0-9]{64}", thread_root)):
+            raise InputError("invalid_thread", "thread_root_id must be a verified 64-character lowercase hex event id.")
+
+    # No attendee addresses or member names are included in the Buzz message.
+    # Its target and all content are still subject to explicit owner review.
+    content = (f"Penguin meeting proposal: {title}\n"
+               f"{slot['start_utc']} to {slot['end_utc']} ({slot['elapsed_minutes']} minutes).\n"
+               "Please confirm whether this time works for you. "
+               "Work-hour fit is not calendar availability. No event or invitation has been created.")
+    event = {"summary": title, "description": description,
+             "start": {"dateTime": slot["start_utc"].replace("Z", ":00Z"), "timeZone": "UTC"},
+             "end": {"dateTime": slot["end_utc"].replace("Z", ":00Z"), "timeZone": "UTC"},
+             "attendees": [{"email": mapping[m["name"]], "responseStatus": "needsAction"} for m in team["members"]]}
+    result = {
+        "schema_version": 1, "status": "draft_only", "executed": False,
+        "approval_required": True, "consent_recorded": False,
+        "availability": {"work_hours_fit": slot["all_available"], "calendar_busy_checked": False,
+                         "participant_confirmation": "not_collected", "selection": slot},
+        "google": {"account_email": account, "identity_verified": False,
+                   "method": "calendar.events.insert", "params": {"calendarId": calendar_id, "sendUpdates": google["send_updates"]},
+                   "body": event, "event_id": None, "html_link": None},
+        "warnings": ["DRAFT ONLY: nothing sent, booked, authenticated, or configured.",
+                     "Names, work hours and draft fields do not prove identity, availability, or consent.",
+                     "Verify the Google account, calendar access and live conflicts before an approved booking."]}
+    if "buzz" in args:
+        result["buzz"] = {"relay_url": relay, "channel_id": channel_id.lower(), "thread_root_id": thread_root,
+                          "target_verified": False, "content": content, "event_id": None, "deep_link": None}
+        result["warnings"].append("Verify Buzz community/channel/thread and allowed public keys before any collaboration.")
+    if not slot["all_available"]:
+        result["warnings"].append("The entire selected meeting does not fit every member's work hours.")
+    if google["send_updates"] == "none":
+        result["warnings"].append("sendUpdates=none: invitation notification emails are disabled; this is not guaranteed private from attendees or their calendars.")
+    # Fingerprint binds the review data, not authorization. It is NOT a signature,
+    # provider idempotency key, authentication assertion, or delivery receipt.
+    encoded = json.dumps(result, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    result["review_fingerprint"] = hashlib.sha256(encoded).hexdigest()
+    return result
+
+
 PLUGIN_ID = "penguin"
 
 
@@ -277,6 +396,8 @@ def execute(action, args, state=None):
             result = convert(args)
         elif action == "preview":
             result = preview(args)
+        elif action == "prepare_handoff":
+            result = prepare_handoff(args)
         elif action == "overlap":
             payload = dict(args)
             if "team_id" in payload:

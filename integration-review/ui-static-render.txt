@@ -1,0 +1,3 @@
+2 static React screen renders passed; no browser, external calls or screenshots.
+(node:27682) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)

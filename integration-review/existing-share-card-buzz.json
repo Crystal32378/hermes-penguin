@@ -1,0 +1,28 @@
+{
+  "mode": "offline_share_draft",
+  "sent": false,
+  "approved": false,
+  "live_transport_available": false,
+  "destination": {
+    "platform": "buzz",
+    "relay_url": "https://fictional.communities.buzz.xyz",
+    "channel_id": "9c90a727-38c2-4abe-a8f1-71871eedc0ea",
+    "verified": false
+  },
+  "selection_fingerprint": "72b2ae4512a3e893f2ec4ada66ee9122224a8b3535dddd1a7093ed0e048be726",
+  "content": "Meeting proposal · Penguin\n60 minutes · 2026-11-16T13:00Z → 2026-11-16T14:00Z\nA: 2026-11-16T21:00+08:00 → 2026-11-16T22:00+08:00 (Asia/Taipei)\nB: 2026-11-16T08:00-05:00 → 2026-11-16T09:00-05:00 (America/New_York)\nPlease confirm availability. No calendar event has been created.",
+  "attachment": null,
+  "new_card_design": false,
+  "requires_organizer_review": true,
+  "message_id": null,
+  "permalink": null,
+  "discussion": "People discuss and confirm externally; this module neither reads nor tallies responses.",
+  "next_step": "After group discussion, organizer supplies attendee emails and reviews the separate Calendar invitation.",
+  "requires_before_send": [
+    "Verify community, dedicated bot identity, channel membership and thread root.",
+    "Review any mention text and upload permission; do not infer recipients from display names.",
+    "Use the supported native Buzz attachment operation/CLI; never interpolate content into a shell.",
+    "For image sharing, export the existing SendOff card; no image has been captured by this plan."
+  ],
+  "review_digest": "c335e7f9f0d9e63508f7c47d5a5ad41f15bdbcb1026f7add154e69f4a2fb2e6f"
+}

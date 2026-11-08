@@ -7,3 +7,6 @@ __pycache__/
 node_modules/
 .test-build/
 .test-evidence/
+
+# Rebuild the review harness; do not commit bundled dependencies.
+integration-review/card-harness/bundle.js

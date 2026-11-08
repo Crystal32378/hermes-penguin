@@ -32,3 +32,24 @@ SCHEMAS = {
         obj({"team_id": TEAM_ID, "team": TEAM}, ("team_id", "team"))),
     "get_team": tool("penguin_get_team", "Read a previously saved team by exact id from the active Hermes profile.", obj({"team_id": TEAM_ID}, ("team_id",))),
 }
+
+# Isolated review prototype: preparation only; no network or external writes.
+SCHEMAS["prepare_handoff"] = tool(
+    "penguin_prepare_handoff",
+    "Prepare a Google Calendar event review from an explicit existing Penguin selection, optionally with a Buzz text draft. No message/event/invitation is sent. No credentials or connectivity are configured. Requires exact account, calendar and member email mappings; Buzz is optional. Work hours do not prove calendar availability. Draft output is not consent. Existing share-card routing is a separate offline module.",
+    obj({
+        "selection": obj({"team": TEAM, "reference_zone": ZONE, "local_time": STRING,
+                          "duration_minutes": {"type": "integer", "minimum": 1, "maximum": 480},
+                          "ambiguity": {"type": "string", "enum": ["reject", "earlier", "later"]}},
+                         ("team", "reference_zone", "local_time", "duration_minutes")),
+        "title": {"type": "string", "maxLength": 160},
+        "description": {"type": "string", "maxLength": 2000},
+        "google": obj({"account_email": STRING, "calendar_id": STRING,
+                       "send_updates": {"type": "string", "enum": ["all", "none"]},
+                       "attendees": {"type": "array", "minItems": 1, "maxItems": 30,
+                                     "items": obj({"member_name": STRING, "email": STRING}, ("member_name", "email"))}},
+                      ("account_email", "calendar_id", "send_updates", "attendees")),
+        "buzz": obj({"relay_url": STRING, "channel_id": STRING,
+                     "thread_root_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"}},
+                    ("relay_url", "channel_id"))
+    }, ("selection", "title", "google")))

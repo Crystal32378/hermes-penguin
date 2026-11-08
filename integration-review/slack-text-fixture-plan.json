@@ -1,0 +1,101 @@
+{
+  "fixture": true,
+  "real_account_or_channel": false,
+  "plan": {
+    "mode": "offline_slack_delivery_plan",
+    "sent": false,
+    "approved": false,
+    "live_transport_available": false,
+    "credentials_accessed": false,
+    "actual_grants_verified": false,
+    "bot_identity_verified": false,
+    "channel_membership_verified": false,
+    "destination": {
+      "platform": "slack",
+      "workspace_id": "T0123456789",
+      "channel_id": "C0123456789",
+      "thread_ts": "1794060000.000001"
+    },
+    "required_scopes": [
+      "chat:write"
+    ],
+    "feature_scope_proposal": [
+      "chat:write",
+      "files:write"
+    ],
+    "share_draft": {
+      "mode": "offline_share_draft",
+      "sent": false,
+      "approved": false,
+      "live_transport_available": false,
+      "destination": {
+        "platform": "slack",
+        "workspace_id": "T0123456789",
+        "channel_id": "C0123456789",
+        "thread_ts": "1794060000.000001",
+        "verified": false
+      },
+      "selection_fingerprint": "72b2ae4512a3e893f2ec4ada66ee9122224a8b3535dddd1a7093ed0e048be726",
+      "content": "Meeting proposal · Penguin\n60 minutes · 2026-11-16T13:00Z → 2026-11-16T14:00Z\nA: 2026-11-16T21:00+08:00 → 2026-11-16T22:00+08:00 (Asia/Taipei)\nB: 2026-11-16T08:00-05:00 → 2026-11-16T09:00-05:00 (America/New_York)\nPlease confirm availability. No calendar event has been created.",
+      "attachment": null,
+      "new_card_design": false,
+      "requires_organizer_review": true,
+      "message_id": null,
+      "permalink": null,
+      "discussion": "People discuss and confirm externally; this module neither reads nor tallies responses.",
+      "next_step": "After group discussion, organizer supplies attendee emails and reviews the separate Calendar invitation.",
+      "mention_policy": {
+        "parse": "none",
+        "link_names": false,
+        "mrkdwn": false,
+        "active_mention_syntax_rejected": true
+      },
+      "required_scopes": [
+        "chat:write"
+      ],
+      "requires_before_send": [
+        "Verify dedicated bot identity, target workspace and membership in this exact private/public channel.",
+        "Verify this exact parent thread when supplied; a channel name or user membership is not bot access.",
+        "Review the existing PNG and full caption together. Obtain approval for the exact destination and data.",
+        "Use only reviewed chat:write/files:write access; no history, DM, app install or credential operations are implemented.",
+        "For image sharing, export the existing SendOff card; no image has been captured by this plan."
+      ],
+      "review_digest": "da4ee6d4d29103edbb7c6e4fce093bbe572782fb8873b0c4af907517065b2a28"
+    },
+    "steps": [
+      {
+        "id": "post_text",
+        "method": "chat.postMessage",
+        "executed": false,
+        "arguments": {
+          "channel": "C0123456789",
+          "thread_ts": "1794060000.000001",
+          "text": "Meeting proposal · Penguin\n60 minutes · 2026-11-16T13:00Z → 2026-11-16T14:00Z\nA: 2026-11-16T21:00+08:00 → 2026-11-16T22:00+08:00 (Asia/Taipei)\nB: 2026-11-16T08:00-05:00 → 2026-11-16T09:00-05:00 (America/New_York)\nPlease confirm availability. No calendar event has been created.",
+          "mrkdwn": false,
+          "parse": "none",
+          "link_names": false,
+          "unfurl_links": false,
+          "unfurl_media": false
+        }
+      }
+    ],
+    "message_ts": null,
+    "permalink": null,
+    "requires_exact_review": true,
+    "before_any_live_operation": [
+      "Verify workspace, dedicated bot identity and access to the exact channel/thread.",
+      "Obtain any app installation or scope grant approval separately; none is provided here.",
+      "Show the exact caption, PNG, channel/thread and data recipients for organizer review.",
+      "Bind final action approval to this payload and image digest; an offline fixture receipt is not approval.",
+      "Use a durable operation journal; inspect ambiguous results before retrying, never double-post."
+    ],
+    "no_extra_access": [
+      "No channel/history search",
+      "No DMs",
+      "No app install",
+      "No Socket Mode",
+      "No calendar access"
+    ],
+    "plan_digest": "cba51cc4f292ea94c4381d3fe9191234fc349f623065b8a55d37c07fb5ba787a"
+  }
+}

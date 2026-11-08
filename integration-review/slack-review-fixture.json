@@ -1,0 +1,7 @@
+{
+  "mode": "fixture_review_receipt",
+  "plan_digest": "cba51cc4f292ea94c4381d3fe9191234fc349f623065b8a55d37c07fb5ba787a",
+  "acknowledged_for_test": true,
+  "authorized_to_send": false,
+  "sent": false
+}

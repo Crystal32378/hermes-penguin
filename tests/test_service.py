@@ -56,7 +56,7 @@ def test_corrupt_storage_is_preserved_and_path_not_leaked():
     assert "/private/" not in json.dumps(result)
 
 
-def test_exactly_four_registered_tools_with_json_results():
+def test_registered_tools_match_schemas_with_json_results():
     class Context:
         state = State()
         def __init__(self): self.tools = {}

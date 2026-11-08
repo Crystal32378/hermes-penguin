@@ -1,0 +1,32 @@
+{
+  "mode": "offline_share_draft",
+  "sent": false,
+  "approved": false,
+  "live_transport_available": false,
+  "destination": {
+    "platform": "discord",
+    "guild_id": "123456789012345678",
+    "channel_id": "234567890123456789",
+    "verified": false
+  },
+  "selection_fingerprint": "72b2ae4512a3e893f2ec4ada66ee9122224a8b3535dddd1a7093ed0e048be726",
+  "content": "Meeting proposal · Penguin\n60 minutes · 2026-11-16T13:00Z → 2026-11-16T14:00Z\nA: 2026-11-16T21:00+08:00 → 2026-11-16T22:00+08:00 (Asia/Taipei)\nB: 2026-11-16T08:00-05:00 → 2026-11-16T09:00-05:00 (America/New_York)\nPlease confirm availability. No calendar event has been created.",
+  "attachment": null,
+  "new_card_design": false,
+  "requires_organizer_review": true,
+  "message_id": null,
+  "permalink": null,
+  "discussion": "People discuss and confirm externally; this module neither reads nor tallies responses.",
+  "next_step": "After group discussion, organizer supplies attendee emails and reviews the separate Calendar invitation.",
+  "mention_policy": {
+    "parse": [],
+    "replied_user": false
+  },
+  "requires_before_send": [
+    "Verify bot identity, server membership and exact channel/thread relationship.",
+    "Verify View Channel, Send Messages and Attach Files permissions; Send Messages in Threads if needed.",
+    "Review the existing card image and caption together; never infer permission to install into the official Hermes server.",
+    "For image sharing, export the existing SendOff card; no image has been captured by this plan."
+  ],
+  "review_digest": "c69a57758e4f85e9a78b68e9a05f2e2f1a38e1f6ae84b5d2da6566470e63b8dd"
+}

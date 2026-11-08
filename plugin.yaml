@@ -1,6 +1,6 @@
 name: penguin
-version: "0.2.2"
-description: Deterministic IANA time conversion, whole-meeting overlap, and profile-local team settings with an optional Desktop planner.
+version: "0.2.3-integration-review.4"
+description: Deterministic IANA time conversion, whole-meeting overlap, and profile-local team settings with a Desktop planner and private draft-only Slack/Buzz/Discord and Calendar handoff prototype.
 author: Crystal Chang
 requires_hermes: ">=0.23.0"
 python_dependencies: []
@@ -9,6 +9,7 @@ provides_tools:
   - penguin_overlap
   - penguin_save_team
   - penguin_get_team
+  - penguin_prepare_handoff
 provides_hooks: []
 provides_middleware: []
 requires_env: []

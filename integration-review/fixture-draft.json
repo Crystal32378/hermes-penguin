@@ -1,0 +1,139 @@
+{
+  "ok": true,
+  "result": {
+    "schema_version": 1,
+    "status": "draft_only",
+    "executed": false,
+    "approval_required": true,
+    "consent_recorded": false,
+    "availability": {
+      "work_hours_fit": true,
+      "calendar_busy_checked": false,
+      "participant_confirmation": "not_collected",
+      "selection": {
+        "start_utc": "2026-11-16T13:00Z",
+        "end_utc": "2026-11-16T14:00Z",
+        "elapsed_minutes": 60,
+        "members": [
+          {
+            "name": "A",
+            "start": {
+              "zone": "Asia/Taipei",
+              "local": "2026-11-16T21:00+08:00",
+              "date": "2026-11-16",
+              "weekday": "Monday",
+              "offset_minutes": 480,
+              "abbreviation": "CST",
+              "fold": 0,
+              "is_dst": false
+            },
+            "end": {
+              "zone": "Asia/Taipei",
+              "local": "2026-11-16T22:00+08:00",
+              "date": "2026-11-16",
+              "weekday": "Monday",
+              "offset_minutes": 480,
+              "abbreviation": "CST",
+              "fold": 0,
+              "is_dst": false
+            },
+            "unavailable_minutes": 0,
+            "available": true
+          },
+          {
+            "name": "B",
+            "start": {
+              "zone": "America/New_York",
+              "local": "2026-11-16T08:00-05:00",
+              "date": "2026-11-16",
+              "weekday": "Monday",
+              "offset_minutes": -300,
+              "abbreviation": "EST",
+              "fold": 0,
+              "is_dst": false
+            },
+            "end": {
+              "zone": "America/New_York",
+              "local": "2026-11-16T09:00-05:00",
+              "date": "2026-11-16",
+              "weekday": "Monday",
+              "offset_minutes": -300,
+              "abbreviation": "EST",
+              "fold": 0,
+              "is_dst": false
+            },
+            "unavailable_minutes": 0,
+            "available": true
+          }
+        ],
+        "all_available": true,
+        "reference_start": {
+          "zone": "Asia/Taipei",
+          "local": "2026-11-16T21:00+08:00",
+          "date": "2026-11-16",
+          "weekday": "Monday",
+          "offset_minutes": 480,
+          "abbreviation": "CST",
+          "fold": 0,
+          "is_dst": false
+        },
+        "database": {
+          "tzdata_version": "2026.6",
+          "iana_version": "2026f",
+          "source": "bundled",
+          "precision": "minute",
+          "algorithm_version": "1"
+        }
+      }
+    },
+    "google": {
+      "account_email": "owner@example.com",
+      "identity_verified": false,
+      "method": "calendar.events.insert",
+      "params": {
+        "calendarId": "primary",
+        "sendUpdates": "all"
+      },
+      "body": {
+        "summary": "Fictional planning session",
+        "description": "Meeting proposed with Penguin.",
+        "start": {
+          "dateTime": "2026-11-16T13:00:00Z",
+          "timeZone": "UTC"
+        },
+        "end": {
+          "dateTime": "2026-11-16T14:00:00Z",
+          "timeZone": "UTC"
+        },
+        "attendees": [
+          {
+            "email": "a@example.com",
+            "responseStatus": "needsAction"
+          },
+          {
+            "email": "b@example.com",
+            "responseStatus": "needsAction"
+          }
+        ]
+      },
+      "event_id": null,
+      "html_link": null
+    },
+    "buzz": {
+      "relay_url": "https://fictional.communities.buzz.xyz",
+      "channel_id": "9c90a727-38c2-4abe-a8f1-71871eedc0ea",
+      "thread_root_id": null,
+      "target_verified": false,
+      "content": "Penguin meeting proposal: Fictional planning session\n2026-11-16T13:00Z to 2026-11-16T14:00Z (60 minutes).\nPlease confirm whether this time works for you. Work-hour fit is not calendar availability. No event or invitation has been created.",
+      "event_id": null,
+      "deep_link": null
+    },
+    "warnings": [
+      "DRAFT ONLY: nothing sent, booked, authenticated, or configured.",
+      "Names, work hours and draft fields do not prove identity, availability, or consent.",
+      "Verify Buzz community/channel/thread and allowed public keys before any collaboration.",
+      "Verify the Google account, calendar access and live conflicts before an approved booking."
+    ],
+    "review_fingerprint": "66189a517442b812812a05fe0308522c6b3b30d87bf2bd3b11f14dcd90b88265"
+  }
+}

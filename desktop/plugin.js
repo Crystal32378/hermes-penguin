@@ -1,5 +1,6 @@
 import { createElement as h, Fragment, useEffect, useRef, useState } from 'react'
 import { ROUTES_AREA, SIDEBAR_NAV_AREA, host, useValue, gatewayActivationEpoch, createBudgetedLoop } from '@hermes/plugin-sdk'
+import {OfflineHandoff,handoffCss} from './handoff.js'
 
 const weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -414,16 +415,17 @@ function ExitStage() {
     h('button',{className:'p-encore',key:'encore',onClick:()=>setRun(run+1),'aria-label':'Replay the commander’s exit'},'Encore'))
 }
 
-function SendOff({ctx,slot,onClose,nodeRef}) {
+function SendOff({ctx,slot,onClose,nodeRef,previewOnly=false}) {
   const kit=useKit(ctx)
-  return h('section',{ref:nodeRef,className:'p-sendoff'+(kit?' p-has-stamp':''),'aria-label':'Meeting proposal completed'},
-    h('div',{className:'p-aurora','aria-hidden':true}),kit?h('div',{className:'p-stamp p-stamp-art','aria-hidden':true},h('img',{src:kit.stamp,alt:''}),h('span',{},'APPROVED')):h('div',{className:'p-stamp','aria-hidden':true},'APPROVED · COMMANDER PENGUIN'),h(PenguinArt,{ctx}),
-    h('div',{className:'p-sendoff-copy'},h('h2',{},'PROPOSAL COPIED · TRANSMISSION COMPLETE'),
+  const [artReady,setArtReady]=useState(false)
+  return h('section',{ref:nodeRef,className:'p-sendoff'+(kit?' p-has-stamp':'')+(previewOnly?' p-export-card':''),'data-export-ready':kit&&artReady?'true':'false','aria-label':previewOnly?'Existing meeting proposal card':'Meeting proposal completed'},
+    h('div',{className:'p-aurora','aria-hidden':true}),kit?h('div',{className:'p-stamp p-stamp-art','aria-hidden':true},h('img',{src:kit.stamp,alt:''}),h('span',{},'APPROVED')):h('div',{className:'p-stamp','aria-hidden':true},'APPROVED · COMMANDER PENGUIN'),h(PenguinArt,{ctx,onReady:setArtReady}),
+    h('div',{className:'p-sendoff-copy'},h('h2',{},previewOnly?'MEETING PROPOSAL · NOT SENT':'PROPOSAL COPIED · TRANSMISSION COMPLETE'),
       h('h3',{},'Dismissed. See you next time in the Antarctic control room.'),
       h('div',{className:'p-final-times'},...slot.members.map((m,i)=>h('span',{key:i},`${m.name} ${m.start.local.slice(11,16)}`,h('time',{className:'p-final-date',dateTime:m.start.date},m.start.date)))),
       h('p',{},'Share the proposal and confirm availability. No calendar event has been created.')),
-    h(ExitStage,{}),
-    h('button',{className:'p-close',onClick:onClose,'aria-label':'Close send-off'},'×'))
+    !previewOnly&&h(ExitStage,{}),
+    !previewOnly&&h('button',{className:'p-close',onClick:onClose,'aria-label':'Close send-off'},'×'))
 }
 
 function ControlRoom({ctx,onContinue}) {
@@ -450,13 +452,14 @@ function Wordmark() {
     ...[...'PENGUIN'].flatMap((letter,i)=>glyphs[letter].flatMap((row,y)=>[...row].map((dot,x)=>dot==='1'?h('rect',{key:`${i}-${y}-${x}`,x:12+i*22+x*3,y:10+y*3,width:2.3,height:2.3,rx:.35,fill:'#fff2d2'}):null))))
 }
 
-function PenguinArt({ctx}) {
+function PenguinArt({ctx,onReady}) {
   const [src,setSrc]=useState('')
   useEffect(()=>{
     let active=true
-    ctx.rest('/art',{method:'GET'}).then(r=>{if(active&&r.src)setSrc(r.src)}).catch(()=>{})
+    onReady?.(false)
+    ctx.rest('/art',{method:'GET'}).then(r=>{if(active&&r.src){setSrc(r.src);onReady?.(true)}}).catch(()=>{})
     return()=>{active=false}
-  },[ctx])
+  },[ctx,onReady])
   if(src)return h('img',{src,className:'p-art',alt:'Penguin in a flight jacket and electric-blue goggles at an Antarctic world-clock station'})
   return h('svg', { viewBox:'0 0 240 230', className:'p-art', role:'img', 'aria-label':'Penguin in Antarctica looking after the world’s clocks' },
     h('ellipse',{cx:121,cy:206,rx:103,ry:17,fill:'#c1ded8'}),
@@ -561,12 +564,13 @@ function Planner({ctx,profile,audioFactory}) {
   const [time,setTime]=useState('21:00'), [ambiguity,setAmbiguity]=useState('reject')
   const [view,setView]=useState(null), [previewError,setPreviewError]=useState(null), [previewPending,setPreviewPending]=useState(true)
   const [completed,setCompleted]=useState(null)
+  const [handoffMode,setHandoffMode]=useState(null)
   const sendOffRef=useRef(null)
   const [result,setResult]=useState(null), [notice,setNotice]=useState(''), [busy,setBusy]=useState(false), [manual,setManual]=useState('')
   const generation=useRef(0), previewGeneration=useRef(0), epoch=useRef(gatewayActivationEpoch())
   function resetScope(){
     generation.current++;previewGeneration.current++;epoch.current=gatewayActivationEpoch()
-    setTeam(sample());setTeamId('aurora-demo');setResult(null);setView(null);setManual('');setBusy(false);setCompleted(null);setPreviewPending(true)
+    setTeam(sample());setTeamId('aurora-demo');setResult(null);setView(null);setManual('');setBusy(false);setCompleted(null);setHandoffMode(null);setPreviewPending(true)
     setNotice('Connection changed. Fictional sample restored. Load a team from this profile to continue.')
   }
   useEffect(()=>{
@@ -622,7 +626,9 @@ function Planner({ctx,profile,audioFactory}) {
     previewGeneration.current++;setPreviewPending(true);setCompleted(null);setDate(slot.reference_start.date);setTime(slot.reference_start.local.slice(11,16))
     setAmbiguity(choice);setManual('');setNotice('')
   }
-  return h('main',{className:'penguin-page p-audio-prototype',ref:audioRootRef},h('style',{},css+introCss+experienceCss+kitCss+audioLabCss),intro?h(ControlRoom,{ctx,onContinue:()=>setIntro(false)}):h('div',{className:'p-wrap'},
+  const handoffSelection={team,reference_zone:reference,local_time:`${date}T${time}`,duration_minutes:Number(duration),ambiguity}
+  const handoffScope=epoch.current
+  return h('main',{className:'penguin-page p-audio-prototype',ref:audioRootRef},h('style',{},css+introCss+experienceCss+kitCss+audioLabCss+handoffCss),intro?h(ControlRoom,{ctx,onContinue:()=>setIntro(false)}):h('div',{className:'p-wrap'},
     h('header',{className:'p-top'},h(Wordmark),h('button',{className:'p-replay',onClick:()=>setIntro(true)},'Replay arrival'),h('span',{className:'p-tag'},`ANTARCTIC TIMEKEEPER · ${profile}`)),
     h('section',{className:'p-hero'},h('canvas',{className:'p-sky',ref:skyRef,'aria-hidden':true}),h('div',{ref:heroCopyRef},h('span',{className:'p-badge'},'MANY PLACES. ONE MOMENT.'),
       h('h1',{},'The world runs on different hours.'),h('p',{className:'p-lead'},'One cool penguin. A whole world of teammates. Find your shared moment from the Antarctic control room.')),h(PenguinArt,{ctx})),
@@ -651,6 +657,10 @@ function Planner({ctx,profile,audioFactory}) {
     h(Dispatch,{ctx,text:dispatch({pending:previewPending,view,error:previewError})}),
     notice&&!completed&&h('div',{className:'p-status',role:'status'},notice),manual&&h('pre',{className:'p-manual',tabIndex:0,'aria-label':'Meeting proposal to copy'},manual),
     completed&&h(SendOff,{ctx,slot:completed,nodeRef:sendOffRef,onClose:()=>setCompleted(null)}),
+    h('div',{className:'p-handoff-actions','aria-label':'Private offline integration prototype'},
+      h('button',{className:'p-secondary',disabled:!view||previewPending,onClick:()=>setHandoffMode('share')},'Share existing card · preview'),
+      h('button',{className:'p-secondary',disabled:!view||previewPending,onClick:()=>setHandoffMode('calendar')},'Calendar invitation · preview')),
+    handoffMode&&view&&!previewPending&&h(OfflineHandoff,{key:profile+handoffMode+JSON.stringify(handoffSelection),ctx,selection:handoffSelection,slot:view,mode:handoffMode,onClose:()=>setHandoffMode(null),scopeValid:()=>handoffScope===gatewayActivationEpoch(),renderCard:nodeRef=>h(SendOff,{ctx,slot:view,nodeRef,previewOnly:true})}),
     h('details',{className:'p-settings'},h('summary',{},'Edit your colony · people, work hours & saved teams'),
       h('p',{className:'p-sub'},'Confirm every person’s IANA zone. Work bars show local wall-clock hours; folds repeat and gaps are skipped in the precise calculation.'),
       h('div',{className:'p-teamhead'},h(Field,{label:'Team name',value:team.name,onChange:v=>edit(setTeam,{...team,name:v}),maxLength:80})),

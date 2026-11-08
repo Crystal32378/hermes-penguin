@@ -1,0 +1,66 @@
+{
+  "selection": {
+    "team": {
+      "name": "Fictional",
+      "members": [
+        {
+          "name": "A",
+          "zone": "Asia/Taipei",
+          "windows": [
+            {
+              "start": "20:00",
+              "end": "23:00",
+              "weekdays": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "zone": "America/New_York",
+          "windows": [
+            {
+              "start": "08:00",
+              "end": "11:00",
+              "weekdays": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "reference_zone": "Asia/Taipei",
+    "local_time": "2026-11-16T21:00",
+    "duration_minutes": 60
+  },
+  "title": "Fictional planning session",
+  "google": {
+    "account_email": "owner@example.com",
+    "calendar_id": "fictional-penguin@group.calendar.google.com",
+    "send_updates": "all",
+    "attendees": [
+      {
+        "member_name": "A",
+        "email": "a@example.com"
+      },
+      {
+        "member_name": "B",
+        "email": "b@example.com"
+      }
+    ]
+  }
+}

@@ -1,0 +1,116 @@
+(node:27680) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:27681) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: existing copy includes exact time and no booking claim
+ok 1 - existing copy includes exact time and no booking claim
+  ---
+  duration_ms: 0.574667
+  type: 'test'
+  ...
+# Subtest: outside saved hours retains existing warning
+ok 2 - outside saved hours retains existing warning
+  ---
+  duration_ms: 0.112042
+  type: 'test'
+  ...
+# Subtest: Discord draft has explicit IDs and no email/credential leakage
+ok 3 - Discord draft has explicit IDs and no email/credential leakage
+  ---
+  duration_ms: 0.373542
+  type: 'test'
+  ...
+# Subtest: Buzz draft does not inherit Discord IDs
+ok 4 - Buzz draft does not inherit Discord IDs
+  ---
+  duration_ms: 0.06475
+  type: 'test'
+  ...
+# Subtest: calendar request uses explicit per-person email and never infers
+ok 5 - calendar request uses explicit per-person email and never infers
+  ---
+  duration_ms: 0.0985
+  type: 'test'
+  ...
+# Subtest: changed selection or form produces different review key
+ok 6 - changed selection or form produces different review key
+  ---
+  duration_ms: 0.071334
+  type: 'test'
+  ...
+# Subtest: new request rejects late old response
+ok 7 - new request rejects late old response
+  ---
+  duration_ms: 0.06575
+  type: 'test'
+  ...
+# Subtest: editing invalidates pending request and unmount closes gate
+ok 8 - editing invalidates pending request and unmount closes gate
+  ---
+  duration_ms: 0.1135
+  type: 'test'
+  ...
+# Subtest: export size is bounded
+ok 9 - export size is bounded
+  ---
+  duration_ms: 0.332083
+  type: 'test'
+  ...
+# Subtest: art export never fetches external or arbitrary SVG source
+ok 10 - art export never fetches external or arbitrary SVG source
+  ---
+  duration_ms: 0.410209
+  type: 'test'
+  ...
+# Subtest: export rejects stale selection before touching document or loading images
+ok 11 - export rejects stale selection before touching document or loading images
+  ---
+  duration_ms: 0.346959
+  type: 'test'
+  ...
+# Subtest: export requires actual existing card element
+ok 12 - export requires actual existing card element
+  ---
+  duration_ms: 0.081042
+  type: 'test'
+  ...
+# Subtest: card export fails closed while bundled artwork is unresolved
+ok 13 - card export fails closed while bundled artwork is unresolved
+  ---
+  duration_ms: 0.065167
+  type: 'test'
+  ...
+# Subtest: new review caption stays identical to original proposal function
+ok 14 - new review caption stays identical to original proposal function
+  ---
+  duration_ms: 0.958375
+  type: 'test'
+  ...
+# Subtest: Slack draft carries exact workspace/channel/thread and no Discord identity
+ok 15 - Slack draft carries exact workspace/channel/thread and no Discord identity
+  ---
+  duration_ms: 0.053834
+  type: 'test'
+  ...
+# Subtest: unknown platform is never silently sent through another adapter
+ok 16 - unknown platform is never silently sent through another adapter
+  ---
+  duration_ms: 0.050416
+  type: 'test'
+  ...
+# Subtest: Slack image review sends metadata only and binds current selection
+ok 17 - Slack image review sends metadata only and binds current selection
+  ---
+  duration_ms: 0.098625
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 64.07525

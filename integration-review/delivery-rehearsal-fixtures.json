@@ -1,0 +1,101 @@
+{
+  "slack": {
+    "status": "fixture_provider_accepted",
+    "history": [
+      {
+        "kind": "fixture_review_only",
+        "authorized_to_send": false
+      },
+      {
+        "kind": "fixture_attempt",
+        "step": "post_text"
+      },
+      {
+        "kind": "fixture_accepted",
+        "step": "post_text"
+      }
+    ],
+    "fixture_artifacts": {
+      "message_ts": "1794060001.000001",
+      "permalink": null,
+      "user_read_verified": false
+    },
+    "actual_delivery_verified": false,
+    "authorized_to_send": false,
+    "network_calls": 0,
+    "durably_persisted": false
+  },
+  "calendar": {
+    "status": "fixture_provider_accepted",
+    "history": [
+      {
+        "kind": "fixture_review_only",
+        "authorized_to_send": false
+      },
+      {
+        "kind": "fixture_attempt",
+        "step": "insert_event"
+      },
+      {
+        "kind": "fixture_unknown",
+        "step": "insert_event"
+      },
+      {
+        "kind": "fixture_readback_matched_no_resend"
+      }
+    ],
+    "fixture_artifacts": {
+      "event_id": "penguin879156aae88c4b51aa1d7a0e47de366e",
+      "provider_link": null,
+      "provider_link_verified": false,
+      "event_matches_review": true,
+      "invite_emails_delivered": null,
+      "attendee_acceptance_verified": false
+    },
+    "actual_delivery_verified": false,
+    "authorized_to_send": false,
+    "network_calls": 0,
+    "durably_persisted": false
+  },
+  "slack_interrupted_image": {
+    "status": "needs_reconciliation",
+    "history": [
+      {
+        "kind": "fixture_review_only",
+        "authorized_to_send": false
+      },
+      {
+        "kind": "fixture_attempt",
+        "step": "obtain_upload"
+      },
+      {
+        "kind": "fixture_accepted",
+        "step": "obtain_upload"
+      },
+      {
+        "kind": "fixture_attempt",
+        "step": "upload_reviewed_bytes"
+      },
+      {
+        "kind": "fixture_accepted",
+        "step": "upload_reviewed_bytes"
+      },
+      {
+        "kind": "fixture_attempt",
+        "step": "complete_upload"
+      },
+      {
+        "kind": "fixture_unknown",
+        "step": "complete_upload"
+      }
+    ],
+    "fixture_artifacts": {
+      "file_id": "F0123456789",
+      "provider_upload_url_shape_checked": true
+    },
+    "actual_delivery_verified": false,
+    "authorized_to_send": false,
+    "network_calls": 0,
+    "durably_persisted": false
+  }
+}
