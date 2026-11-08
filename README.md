@@ -14,6 +14,12 @@ The electric-blue Antarctic control room uses Crystal's Penguin illustration and
 
 Captured from actual Hermes v0.23.0 with an isolated gateway and fictional team settings. The 0.2.0 artwork/UI branch was checked in the native app; integration follow-ups were checked in a disposable browser harness. Screenshot provenance and the exact distinction are in [validation notes](docs/VALIDATION_0.2.0.md). The backend needs-setup badge means no model provider is configured; Penguin does not require one. [Illustrated Antarctic arrival](docs/native-arrival-0.2.jpg).
 
+## Try it in your browser
+
+[Open the interactive Penguin demo](https://penguin-browser-demo.netlify.app/) to drag the shared time slider and explore meeting windows without installing Hermes.
+
+This is an independent browser demo, separate from the Hermes plugin above. It starts with fictional teammates and keeps changes only in the current page; reloading clears them. It has no calendar or group-chat connections and creates no calendar events. The first load downloads the Python runtime so the scheduling engine can run locally in your browser.
+
 ## Install locally
 
 Requires Python 3.11+ and **Hermes >=0.23.0**. Tested against official release commit `2bd378ed1b8d6bf2192cb26e0a55ff3091e6bd19`. Use a fresh development profile/home for the prototype. The `penguin` folder itself is the installable package; do not copy the surrounding workspace, references, environments or evidence.
